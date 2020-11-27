@@ -1,0 +1,263 @@
+---
+title: "Sampling Bias Tests"
+author: "Sheryl Murdock"
+date: "25 November 2020"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    theme: cerulean
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+opts_chunk$set(tidy.opts=list(width.cutoff=60), tidy=TRUE)
+opts_knit$set(root.dir = "~/Desktop/3M_for_github")
+```
+
+This page details statistical tests for compositional biases related to methods of microbial assemblage sampling. We compare between methods of cell removal from tubeworm-associated assemblages (direct removal of biofilms or agitation in a bucket of sterile artificial seawater) and microbial size fraction (micro=20-64µm, pico/nano=0.2-20µm).
+
+# Data Import
+
+Import data from all 40 individual DNA extracts and reduce down to the 30 from grab samples (two size fractions from each of 13 samples plus two methodological replicates from samples EMw1 and EMw6). Singleton OTUs have been removed. 
+```{r}
+# Bacteria
+Bact40<-read.csv("Bact40nonsingleton.csv", header=TRUE, row.names = 1)
+Bact30<-Bact40[-c(3,10,15,20,25,28,33,38,39,40),]
+
+# Eukarya
+Euk40<-read.csv("Euk40nonsingleton.csv", header=TRUE, row.names = 1)
+Euk30<-Euk40[-c(3,10,15,20,25,28,33,38,39,40),]
+
+# Archaea (two extracts of ECw11 removed- too few reads)
+Arch38<-read.csv("Arch38nonsingleton.csv", header=TRUE, row.names = 1)
+Arch28<-Arch38[-c(3,8,13,18,23,26,31,36,37,38),]
+
+# qPCR-balanced microbial assemblage (size fractions combined, EMw1 and EMw6 replicates included)
+# Remove fluid samples.
+Micro25<-read.csv("QPCR_balanced_microbes_25.csv", header=TRUE, row.names = 1)
+Micro25<-as.data.frame(t(Micro25))
+balMicGrabs<-Micro25[-c(1:10),]
+
+# metadata-size fractions separate
+grabs30meta<-read.csv("grabs30metadata.csv", header=TRUE, row.names = 1)
+# metadata-size fractions combined
+grabs15meta<-read.csv("grabs15metadata.csv", header=TRUE, row.names = 1)
+```
+<br>
+
+# Size fraction bias tests 
+## Bacteria
+Test for difference in diversity using Wilcoxon Rank Sum test.
+```{r message=FALSE, warning=FALSE}
+library(vegan)
+bact30Div<-diversity(Bact30, index="invsimpson", MARGIN = 1)
+bact30Div
+
+grabs30meta<-cbind(grabs30meta,bact30Div)
+
+mDivB<-grabs30meta$bact30Div[grabs30meta$Size_class=="micro"]
+pnDivB<-grabs30meta$bact30Div[grabs30meta$Size_class=="pico_nano"]
+
+wilcox.test(mDivB,pnDivB)
+```
+**RESULT: Bacterial diversity values are not significantly different between size fractions**
+<br>
+
+Test for difference in composition using Analysis of Similarities (ANOSIM).
+```{r warning=FALSE, message=FALSE}
+library(zCompositions)
+library(vegan)
+library(compositions)
+
+# remove zero sum OTUs (i.e. OTUs that were only in the fluids)
+Bact30trim<-Bact30[,which(colSums(Bact30) >0)]
+
+# 'zCompositions' for imputation of zeros. 
+Bact30_cmultRepl<-cmultRepl(Bact30trim, method="CZM", output="p-counts")
+
+# Centered log-ratio transformation
+clr_Bact30<-apply(Bact30_cmultRepl, 2, function(x){log(x)-mean(log(x))})
+
+# Calculate Aitchison distance matrix
+clr_Bact30.dist<-dist(clr_Bact30)
+
+codaBact30ANOSIMsize<-with(grabs30meta, anosim(clr_Bact30.dist, Size_class))
+summary(codaBact30ANOSIMsize)
+```
+**RESULT: Bacterial composition does NOT differ significantly between size fractions**
+<br>
+
+## Eukarya
+Test for difference in diversity using Wilcoxon Rank Sum test.
+```{r warning=FALSE, message=FALSE}
+euk30Div<-diversity(Euk30, index="invsimpson", MARGIN = 1)
+euk30Div
+
+grabs30meta<-cbind(grabs30meta,euk30Div)
+
+mDivE<-grabs30meta$euk30Div[grabs30meta$Size_class=="micro"]
+pnDivE<-grabs30meta$euk30Div[grabs30meta$Size_class=="pico_nano"]
+
+wilcox.test(mDivE,pnDivE)
+```
+**RESULT: Microeukaryote diversity values are not significantly different between size fractions**
+<br>
+
+Test for difference in composition using ANOSIM.
+```{r warning=FALSE, message=FALSE}
+# remove zero sum OTUs (i.e. OTUs that were only in the fluids)
+Euk30trim<-Euk30[,which(colSums(Euk30) >0)]
+
+# 'zCompositions' for imputation of zeros. 
+Euk30_cmultRepl<-cmultRepl(Euk30trim, method="CZM", output="p-counts")
+
+# Centered log-ratio transformation
+clr_Euk30<-apply(Euk30_cmultRepl, 2, function(x){log(x)-mean(log(x))})
+
+# Calculate Aitchison distance matrix
+clr_Euk30.dist<-dist(clr_Euk30)
+
+codaEuk30ANOSIMsize<-with(grabs30meta, anosim(clr_Euk30.dist, Size_class))
+summary(codaEuk30ANOSIMsize)
+```
+**RESULT: Microeukaryote composition does NOT differ significantly between size fractions**
+<br>
+
+## Archaea
+Test for difference in diversity using Wilcoxon Rank Sum test.
+```{r warning=FALSE, message=FALSE}
+arch28Div<-diversity(Arch28, index="invsimpson", MARGIN = 1)
+arch28Div
+
+grabs28meta<-grabs30meta[-(7:8),]
+grabs28meta<-cbind(grabs28meta,arch28Div)
+
+mDivA<-grabs28meta$euk30Div[grabs28meta$Size_class=="micro"]
+pnDivA<-grabs28meta$euk30Div[grabs28meta$Size_class=="pico_nano"]
+
+wilcox.test(mDivA,pnDivA)
+```
+**RESULT: Archaeal diversity values are not significantly different between size fractions**
+<br>
+
+Test for difference in composition using ANOSIM.
+```{r warning=FALSE, message=FALSE}
+# remove zero sum OTUs (i.e. OTUs that were only in the fluids)
+Arch28trim<-Arch28[,which(colSums(Arch28) >0)]
+
+# 'zCompositions' for imputation of zeros. 
+Arch28_cmultRepl<-cmultRepl(Arch28trim, method="CZM", output="p-counts")
+
+# Centered log-ratio transformation
+clr_Arch28<-apply(Arch28_cmultRepl, 2, function(x){log(x)-mean(log(x))})
+
+# Calculate Aitchison distance matrix
+clr_Arch28.dist<-dist(clr_Arch28)
+
+codaArch28ANOSIMsize<-with(grabs28meta, anosim(clr_Arch28.dist, Size_class))
+summary(codaArch28ANOSIMsize)
+```
+**RESULT: Microeukaryote composition does NOT differ significantly (at p<0.01) between size fractions**
+
+# Methodological replicate bias tests
+## Composition
+### Two replicate samples
+Using the QPCR-balanced microbial assemblages
+```{r warning=FALSE, message=FALSE}
+# Test only the two paired samples, EMw1 and EMw6
+reps<-balMicGrabs[c(2,3,5,6),]
+reps<-reps[,which(colSums(reps) >0)]
+repsMeta<-(grabs15meta[c(2,3,5,6),])
+
+# Deal with zeros
+reps_cmultRepl<-cmultRepl(reps, method="CZM", output="p-counts")
+
+# Centered log-ratios
+clr_reps <- apply(reps_cmultRepl, 2, function(x){log(x)-mean(log(x))})
+
+# Distance matrix
+clr_reps.dist<-dist(clr_reps)
+
+reps_ANOSIM<-with(repsMeta, anosim(clr_reps.dist, Sample_type))
+summary(reps_ANOSIM)
+```
+**RESULT: No signficant difference in microbial assemblage composition between cell harvesting methods.**
+<br>
+
+### All grab samples (QPCR-balanced)
+Double check by comparing all grab samples to verify that no distinctions occur between the two methods.
+```{r warning=FALSE, message=FALSE}
+# Deal with zeros
+balMicGrabs_cmultRepl<-cmultRepl(balMicGrabs, method="CZM", output="p-counts")
+
+# Centered log-ratios
+clr_balMicGrabs <- apply(balMicGrabs_cmultRepl, 2, function(x){log(x)-mean(log(x))})
+
+# Distance matrix
+clr_balMicGrabs.dist<-dist(clr_balMicGrabs)
+
+balMicGrabs_ANOSIM<-with(grabs15meta, anosim(clr_balMicGrabs.dist, Sample_type))
+summary(balMicGrabs_ANOSIM)
+```
+**RESULT: Full set of grab samples confirms, no significant compositional difference between cell harvesting methods.**
+
+### All grab samples (Bacteria)
+```{r warning=FALSE, message=FALSE}
+codaBact30ANOSIMmethod<-with(grabs30meta, anosim(clr_Bact30.dist, Sample_type))
+summary(codaBact30ANOSIMmethod)
+```
+**RESULT: Weak difference in bacterial compositions (p<0.05).**
+
+### All grab samples (Eukarya)
+```{r warning=FALSE, message=FALSE}
+codaEuk30ANOSIMmethod<-with(grabs30meta, anosim(clr_Euk30.dist, Sample_type))
+summary(codaEuk30ANOSIMmethod)
+```
+**RESULT: Very weak difference in microeukaryote compositions (p<0.05).**
+
+### All grab samples (Archaea)
+```{r warning=FALSE, message=FALSE}
+codaArch28ANOSIMmethod<-with(grabs28meta, anosim(clr_Arch28.dist, Sample_type))
+summary(codaArch28ANOSIMmethod)
+```
+**RESULT: Weak difference in archaeal compositions (p<0.05).**
+<br>
+
+## Diversity
+### Bacteria
+Test for difference in diversity using Wilcoxon Rank Sum test
+```{r}
+bkDivB<-grabs30meta$bact30Div[grabs30meta$Sample_type=="bk"]
+dDivB<-grabs30meta$bact30Div[grabs30meta$Sample_type=="d"]
+
+wilcox.test(dDivB,bkDivB)
+```
+**RESULT: Bacterial diversity values are NOT significantly different between the two harvesting methods**
+
+### Euakrya
+```{r}
+bkDivE<-grabs30meta$euk30Div[grabs30meta$Sample_type=="bk"]
+dDivE<-grabs30meta$euk30Div[grabs30meta$Sample_type=="d"]
+
+wilcox.test(dDivE,bkDivE)
+```
+**RESULT: Microeukaryote diversity values ARE significantly different between the two harvesting methods**
+
+### Archaea
+```{r}
+bkDivA<-grabs28meta$arch28Div[grabs28meta$Sample_type=="bk"]
+dDivA<-grabs28meta$arch28Div[grabs28meta$Sample_type=="d"]
+
+wilcox.test(dDivA,bkDivA)
+```
+**RESULT: Archaeal diversity values are NOT significantly different between the two harvesting methods**
+
+# Session Info
+```{r}
+sessionInfo()
+```
+
