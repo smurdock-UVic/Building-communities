@@ -1,4 +1,4 @@
-# Endeavour-communities
+# Hydrothermal vent communities
 Identifying covarying taxa across faunal and microbial size classes using proportionality and enrichment.
 
 This repository holds supporting data files and R code associted with the manuscript:
