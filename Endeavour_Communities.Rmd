@@ -1,0 +1,1335 @@
+---
+title: "Recognizing communities among microbes, meiofauna and macrofauna at hydrothermal vents"
+author: "Sheryl Murdock"
+date: "25 November 2020"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    theme: cerulean
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+opts_chunk$set(tidy.opts=list(width.cutoff=70), tidy=TRUE)
+opts_knit$set(root.dir = "~/Desktop/3M_for_github")
+```
+
+# Study description
+Microbial and faunal assemblages associated with the tubeworm *Ridgeia piscesae* were collected from thirteen tubeworm bushes in the Endeavour Hydrothermal Vent Marine Protected Area and Middle Valley aboard the CCGS Tully using the remotely-operated vehicle ROPOS in August of 2016. Macro- and meiofaunal species were identified and enumerated from 9 assemblage ("grab") samples. Microbial community DNA was extracted from biofilm/detrital matter associated with all 13 assemblages. Microbial biomass was separated into two size fractions (20-64µm, 0.2-20µm) by serial filtration and two method replicates for each size fraction comparing biomass removal methods were included from assemblages EMw1 and EMw6. Microbial DNA was extracted from 7 diffuse fluid and 3 background fluid samples for a total of 40 DNA extractions. 
+
+# Data Import
+## Faunal species data
+The faunal dataset contains counts of individuals for 41 macrofaunal taxa (1mm sieve) and 25 mieofaunal taxa (64µm sieve; inlcudes juveniles of 11 macrofauna). Large samples were split, counted and scaled up to full sample numbers. Details of counted splits are in Supplementary Tables 1 and 2. Data are provided as counts for meiofauna and relative abundance for macrofauna due to planned inclusion of macrofaunal species counts in another manuscript. Please contact R. Boschen-Rose (reboschen-rose@outlook.com) for macrofaunal species counts.
+```{r}
+# Macrofauna species counts (available by request)
+macro9<-read.csv("Macro9counts.csv", header=TRUE, row.names = 1)
+macro9<-as.data.frame(t(macro9))
+
+# Meiofauna species counts
+meio9<-read.csv("Meio9counts.csv", header=TRUE, row.names = 1)
+meio9<-as.data.frame(t(meio9))
+```
+
+## Microbial OTU data
+The microbial dataset contains OTU counts from reads produced on Illumina MiSeq runs using 16S/18S rRNA gene primers for Bacteria, Archaea, and microeukaryotes. Size fractions and method replicates are combined here. See *"SamplingBiasTests"* for justification.
+```{r}
+# Bacterial OTU counts
+codaBact23nonsingleton<-read.csv("BacterialOTUs.csv", header=TRUE, row.names = 1)
+codaBact23nonsingleton<-as.data.frame(t(codaBact23nonsingleton))
+
+# Eukaryal OTU counts
+codaEuk23nonsingleton<-read.csv("EukaryalOTUs.csv", header=TRUE, row.names = 1)
+codaEuk23nonsingleton<-as.data.frame(t(codaEuk23nonsingleton))
+
+# Archaeal OTU counts (ECw11 not included- too few reads)
+codaArch22nonsingleton<-read.csv("ArchaealOTUs.csv", header=TRUE, row.names = 1)
+codaArch22nonsingleton<-as.data.frame(t(codaArch22nonsingleton))
+```
+Files with size fractions and replicates kept separate (40 individual DNA extracts). Singleton OTUs have been removed.
+```{r}
+# Bacteria
+Bact40<-read.csv("Bact40nonsingleton.csv", header=TRUE, row.names = 1)
+
+# Eukarya
+Euk40<-read.csv("Euk40nonsingleton.csv", header=TRUE, row.names = 1)
+
+# Archaea (two extracts of ECw11 removed- too few reads)
+Arch38<-read.csv("Arch38nonsingleton.csv", header=TRUE, row.names = 1)
+```
+QPCR-balanced microbial community. Three microbial domains were balanced to whole community relative abundances based on quantitative PCR results and multiplied by 10^5^ to scale to whole number pseudo counts.
+```{r}
+balMic<-read.csv("QPCR_balanced_microbes.csv", header=TRUE, row.names = 1)
+balMic<-as.data.frame(t(balMic))
+```
+
+## Metadata
+Sample_type codes: f=fluids, B=background, bk=cell removal through agitation in bucket of artificial seawater, d=direct removal of cells in biofilms. T_category for diffuse fluids is determined by the basal temperature of the associated assemblage, NOT the diffuse fluid temperature itself.    
+```{r}
+metadata23<-read.csv("metadata23.csv", header = TRUE, row.names = 1)
+metadata23
+```
+
+## Load necessary R packages
+```{r message=FALSE}
+library(vegan)
+library(reshape2)
+library(ggplot2)
+library(ggrepel)
+library(ggpubr)
+library(funrar)
+library(compositions)
+library(zCompositions)
+library(propr)
+library(ALDEx2)
+```
+
+<br>
+
+# Sample diversity 
+Diversity was calculated using the Inverse Simpson metric. For microbial domains from tubeworm-associated samples, diversity is calculated individually on all extracts and then with size fractions and method replicates combined. Wilcoxon Rank Sum tests are applied to test for significant differences in diversity levels.
+
+## Macrofauna
+```{r message=FALSE}
+MacroDiv<-diversity(macro9, index="invsimpson", MARGIN = 1)
+MacroDiv
+```
+Wilcox test between highT and lowT diversity levels.
+```{r message=FALSE, warning=FALSE}
+MAChighTdiv<-c(3.03, 3.04, 3.04, 2.30, 1.94)
+MAClowTdiv<-c(2.36, 2.62, 1.27, 9.23)
+
+wilcox.test(MAClowTdiv,MAChighTdiv)
+```
+*Macrofaunal diversity IS NOT significantly different between highT and lowT grabs.*
+
+## Meiofauna
+```{r message=FALSE}
+MeioDiv<-diversity(meio9, index="invsimpson", MARGIN = 1)
+MeioDiv
+```
+Wilcox test between highT and lowT diversity levels.
+```{r message=FALSE, warning=FALSE}
+MEhighTdiv<-c(1.24, 1.07, 1.01, 1.0, 1.38)
+MElowTdiv<-c(4.78, 4.86, 3.02, 1.54)
+
+wilcox.test(MEhighTdiv,MElowTdiv)
+```
+*Meiofaunal diversity IS significantly different between highT and lowT grabs.*
+
+
+## Microbes (40 extracts)
+For individual DNA extracts, sample naming conventions for tubeworm associated extracts are as follows:     
+Sample name followed by microbial community removal method (bk= agitation in bucket of artificial seawater, d= direct removal of attached biofilm) and size fraction (m= micro 20-64µm, pn= pico/nano 0.2-20µm).     
+**EXAMPLE: EMw3bkm --> sample EMw3, bucket agitation method, micro size fraction.**
+
+### Bacteria
+```{r}
+Bact40nonsingDiv<-diversity(Bact40, index="invsimpson", MARGIN = 1)
+Bact40nonsingDiv
+```
+
+```{r}
+BhighTdiv<-c(11.18, 10.57,	69.32, 30.21, 13.66, 5.00, 26.25, 13.91, 15.88,	67.08, 16.67, 22.86, 5.38, 30.18) 
+BlowTdiv<-c(190.79, 13.88, 108.58, 38.20, 30.64, 96.76, 18.15, 114.01, 129.67, 132.02, 13.38, 125.16, 39.52, 180.55, 12.66,61.60) 
+BfluidsDiv<-c(9.44,	13.95,	16.31,	3.36,	13.79,	6.73,	8.74,	6.78,	6.00,	10.44) 
+
+wilcox.test(BhighTdiv, BlowTdiv)
+wilcox.test(BfluidsDiv, BhighTdiv)
+wilcox.test(BfluidsDiv, BlowTdiv)
+```
+*Bacterial diversity IS signficantly different between highT and lowT grabs and between fluids and both highT and lowT grabs.* 
+
+### Eukarya
+```{r}
+Euk40nonsingDiv<-diversity(Euk40, index="invsimpson", MARGIN = 1)
+Euk40nonsingDiv
+```
+```{r warning=FALSE}
+EhighTdiv<-c(11.70,	4.60,	2.94,	8.59,	1.33,	4.35,	2.70,	5.85,	13.68,	3.69,	2.43,	1.23,	3.28,	5.72) 
+ElowTdiv<-c(11.69,	2.56,	24.94,	9.21,	8.20,	27.09,	8.33,	6.74,	2.68,	3.22,	7.48,	3.04,	8.59,	40.64, 17.24,	8.10) 
+EfluidsDiv<-c(2.01,	1.83,	33.58,	20.32,	7.44,	5.47,	14.21,	8.34,	16.75,	1.75) 
+
+wilcox.test(EhighTdiv, ElowTdiv)
+wilcox.test(EfluidsDiv, EhighTdiv)
+wilcox.test(ElowTdiv, EfluidsDiv)
+```
+*Eukaryal diversity IS signficantly different between highT and lowT grabs, but not between fluids and either highT or lowT grabs.*
+ 
+### Archaea
+```{r}
+Arch40nonsingDiv<-diversity(Arch38, index="invsimpson", MARGIN = 1)
+Arch40nonsingDiv
+```
+```{r warning=FALSE}
+AhighTdiv<-c(3.94,	8.00,	6.05,	1.12,	6.67,	2.10,	5.99,	7.65,	9.40,	7.69,	1.62,	6.44,	6.41,	4.72) 
+AlowTdiv<-c(1.04,	1.18,	1.02,	2.34,	1.02,	4.15,	2.86,	1.03,	1.01,	1.03,	1.03,	1.01,	2.35,	2.61)
+AfluidsDiv<-c(3.24,	2.94,	5.08,	4.71,	3.54,	3.61,	3.07,	4.49,	4.65,	4.40)
+
+wilcox.test(AlowTdiv, AhighTdiv)
+wilcox.test(AfluidsDiv, AhighTdiv)
+wilcox.test(AlowTdiv, AfluidsDiv)
+```
+*Archaeal diversity IS signficantly different between highT and lowT grabs and between fluids and both highT and lowT grabs.* 
+
+## Diversity boxplots
+(Plotting for all 40 extracts)
+```{r fig.height=4.5, fig.width=6}
+# Combine diversity values into one dataframe
+InvSimpson<-c(BhighTdiv,BlowTdiv,BfluidsDiv,EhighTdiv,ElowTdiv,EfluidsDiv,AhighTdiv,AlowTdiv,AfluidsDiv,MAChighTdiv,MAClowTdiv,MEhighTdiv,MElowTdiv)
+domain<-c(rep("Bacteria", 40), rep("Eukarya", 40), rep("Archaea", 38), rep("Macrofauna", 9), rep("Meiofauna", 9))
+Sample_type<-c(rep(c(rep("highT", 14), rep("lowT", 16), rep("fluids", 10)), 2), rep("highT", 14), rep("lowT", 14), rep("fluids", 10), rep(c(rep("highT", 5), rep("lowT", 4)), 2))
+
+Div4Plots<-data.frame(InvSimpson,Sample_type,domain)
+
+# Plot them
+ggplot(Div4Plots, aes(domain, InvSimpson, fill=Sample_type)) + geom_boxplot(varwidth = FALSE) + scale_fill_discrete(breaks=c("fluids", "highT", "lowT"), labels=c("Fluids", "HighT", "LowT"), name="Sample Type") + labs(x= NULL, y="Diversity (Inverse Simpson)") +  facet_wrap(. ~ domain, scales="free") + theme(axis.text.x = element_blank(), axis.title.x = element_blank(), axis.text.y = element_text(size=12), axis.title.y = element_text(size=14))
+```
+```{r echo=FALSE, message=FALSE}
+ggsave("Diversity boxplots.pdf", height=6, width=7)
+```
+
+<br>
+
+## Microbes (23 samples)
+For these calculations, size fractions and method replicates are combined.
+
+### Bacteria
+NOTE: These diversity calculations are based on subsampled datasets (using the smallest read count by domain).
+```{r message=FALSE}
+rowSums(codaBact23nonsingleton)
+subBact23<-as.data.frame(rrarefy(codaBact23nonsingleton, sample = 18755))
+subBact23Div<-diversity(subBact23, index="invsimpson", MARGIN = 1)
+subBact23Div
+```
+
+### Eukarya
+```{r message=FALSE}
+subEuk23<-as.data.frame(rrarefy(codaEuk23nonsingleton, sample = 13172))
+subEuk23Div<-diversity(subEuk23, index="invsimpson", MARGIN = 1)
+subEuk23Div
+```
+
+### Archaea
+```{r message=FALSE}
+subArch22<-as.data.frame(rrarefy(codaArch22nonsingleton, sample = 25064))
+subArch22Div<-diversity(subArch22, index="invsimpson", MARGIN = 1)
+subArch22Div
+```
+<br>
+
+
+# Comparing sample compositions
+## Compositional data approach
+Data from high-throughput sequencing platforms, which have an arbitrary sum imposed by the instrument, contain only information on ratios between taxa and are therefore considered compositional in nature. Data analysis followed the compositional approach recommended by Gloor and Reid (2016) and Quinn et al (2019). Zero counts were replaced by an imputed value using the count zero multiplicative method in the zCompositions R package (Martín-Fernández et al 2011, Palarea-Albaladejo and Martin-Fernandez 2015), and data were then transformed by centered log-ratio (Aitchison 1986). Faunal data followed the same approach because full assemblages were not collected.
+
+## Macrofauna
+Nonmetric Multidimensional Scaling to visualize the relationships between samples based on species abundances.
+
+```{r message=FALSE, warning=FALSE, results='hide', fig.keep='all', fig.height=4.5, fig.width=6}
+# Package 'zCompositions' for imputation of zeros. Output="p-counts" returns pseudo-counts (preserves ratios in the original data after conversion of zeros to non-zeros).
+mac9_cmultRepl<-cmultRepl(macro9, method="CZM", output="p-counts")
+
+# Centered log-ratio transformation
+clr_mac9<-apply(mac9_cmultRepl, 2, function(x){log(x)-mean(log(x))})
+
+# Package 'compositions' to calculate Aitchison distance matrix
+# metaMDS for Nonmetric Multidimensional Scaling
+clr_mac9.dist<-dist(clr_mac9)
+clr_mac9.NMDS<-metaMDS(clr_mac9.dist, k=2, try=100)
+
+# Trim the metadata file down to only the samples with all three size classes characterized and re-order the sample rows to match the macro9 file.
+metadata9<-metadata23[c(1,3,4,5,8,10,11,12,13),]
+metadata9<-metadata9[match(rownames(macro9),rownames(metadata9)),]
+
+# Make a dataframe with NMDS points and associated metadata
+clr_mac9.NMDS.df<-data.frame(x=clr_mac9.NMDS$points[,1], y=clr_mac9.NMDS$points[,2], T_category=as.factor(metadata9[,5]), Vent_field=as.factor(metadata9[,3]), Temperature=metadata9[,4], Substratum=as.factor(metadata9[,6]))
+
+# Plot it
+ggplot(data=clr_mac9.NMDS.df, aes(x=x, y=y, color=Temperature, shape=Substratum)) + geom_point(size=4) + geom_text_repel(aes(label=rownames(metadata9)), hjust=0.5, vjust=1.5, size=4) + ggtitle("Macrofauna NMDS") + scale_color_gradient(low="blue", high = "red")
+```
+```{r echo=FALSE}
+ggsave("Macrofauna NMDS.pdf", height=4, width=5)
+```
+
+
+<br>
+
+**Envfit** to see which variables (Vent_field + Substratum + Temperature + T_category) explain the NMDS plot.    
+*Temperature is a signficant predictor, followed by substratum.*  
+```{r}
+clr_mac9_NMDSfit<- envfit(clr_mac9.NMDS ~ ., metadata9)
+clr_mac9_NMDSfit
+```
+
+<br>
+
+Hierarchical cluster analysis.
+```{r}
+clr_mac9.CLUST<-hclust(clr_mac9.dist, method="average", member=NULL)
+plot(clr_mac9.CLUST, hang=-1, main="Macrofauna")
+```
+
+<br>
+
+**ANOSIM tests** on the clr-transformed data to assess differences based on highT vs lowT, substratum and vent field.
+```{r}
+mac9ANOSIMtemp<-with(metadata9, anosim(clr_mac9.dist, T_category))
+summary(mac9ANOSIMtemp)
+```
+
+```{r}
+mac9ANOSIMsubstr<-with(metadata9, anosim(clr_mac9.dist, Substratum))
+summary(mac9ANOSIMsubstr)
+```
+
+```{r}
+mac9ANOSIMfield<-with(metadata9, anosim(clr_mac9.dist, Vent_field))
+summary(mac9ANOSIMfield)
+```
+**RESULT: Temperature category is a significant factor in macrofaunal diversity variation, substratum and vent field are not.**
+
+<br>
+
+## Meiofauna
+```{r echo=FALSE, message=FALSE, warning=FALSE, results='hide', fig.keep='all', fig.height=4.5, fig.width=6}
+# Imputation of zeros
+meio9_cmultRepl<-cmultRepl(meio9, method="CZM", output="p-counts")
+
+# Centered log-ratio transformation
+clr_meio9<-apply(meio9_cmultRepl, 2, function(x){log(x)-mean(log(x))})
+
+# Calculate Aitchison distance matrix
+clr_meio9.dist<-dist(clr_meio9)
+clr_meio9.NMDS<-metaMDS(clr_meio9.dist, k=2)
+
+clr_meio9.NMDS.df<-data.frame(x=clr_meio9.NMDS$points[,1], y=clr_meio9.NMDS$points[,2], T_category=as.factor(metadata9[,5]), Vent_field=as.factor(metadata9[,3]), Temperature=metadata9[,4], Substratum=as.factor(metadata9[,6]))
+
+ggplot(data=clr_meio9.NMDS.df, aes(x=x, y=y, color=Temperature, shape=Substratum)) + geom_point(size=4) + geom_text_repel(aes(label=rownames(metadata9)), hjust=0.5, vjust=1.5, size=4) + ggtitle("Meiofauna NMDS") + scale_color_gradient(low="blue", high = "red")
+```
+
+```{r echo=FALSE}
+ggsave("Meiofauna NMDS.pdf", height=4, width=5)
+```
+
+<br>
+
+Envfit. Temperature is the only signficant predictor.
+```{r echo=FALSE}
+clr_meio9_NMDSfit<- envfit(clr_meio9.NMDS ~ ., metadata9)
+clr_meio9_NMDSfit
+```
+
+```{r echo=FALSE}
+clr_meio9.CLUST<-hclust(clr_meio9.dist, method="average", member=NULL)
+plot(clr_meio9.CLUST, hang=-1, main="Meiofauna")
+```
+  
+<br>
+
+**ANOSIM tests** on the clr-transformed data (highT vs lowT, substratum and vent field).
+```{r echo=FALSE}
+meio9ANOSIMtemp<-with(metadata9, anosim(clr_meio9.dist, T_category))
+summary(meio9ANOSIMtemp)
+```
+```{r echo=FALSE}
+meio9ANOSIMsubstr<-with(metadata9, anosim(clr_meio9.dist, Substratum))
+summary(meio9ANOSIMsubstr)
+```
+```{r echo=FALSE}
+meio9ANOSIMfield<-with(metadata9, anosim(clr_meio9.dist, Vent_field))
+summary(meio9ANOSIMfield)
+```
+
+**RESULT: Temperature category is a significant factor in meiofaunal diversity variation, substratum and vent field are not.**
+
+<br>
+
+## Microbes (9 fully characterized samples)
+### Bacteria
+```{r}
+codaBact9<-codaBact23nonsingleton[c(11,13,14,15,17,18,20,22,23),]
+
+# remove any OTU with only 1 read. Drops from 40,389 to 18,570 OTUs.
+codaBact9nonsingleton<-codaBact9[,which(colSums(codaBact9) >1)]
+```
+
+```{r echo=FALSE, message=FALSE, results='hide', fig.keep='all', fig.height=4.5, fig.width=6}
+# Imputation of zeros
+bact9_cmultRepl<-cmultRepl(codaBact9nonsingleton, method="CZM", output="p-counts")
+
+# Centered log-ratio transformation
+clr_bact9<-apply(bact9_cmultRepl, 2, function(x){log(x)-mean(log(x))})
+
+# Calculate Aitchison distance matrix
+clr_bact9.dist<-dist(clr_bact9)
+clr_bact9.NMDS<-metaMDS(clr_bact9.dist, k=2)
+
+clr_bact9.NMDS.df<-data.frame(x=clr_bact9.NMDS$points[,1], y=clr_bact9.NMDS$points[,2], T_category=as.factor(metadata9[,5]), Vent_field=as.factor(metadata9[,3]), Temperature=metadata9[,4], Substratum=as.factor(metadata9[,6]))
+
+ggplot(data=clr_bact9.NMDS.df, aes(x=x, y=y, color=Temperature, shape=Substratum)) + geom_point(size=4) + geom_text_repel(aes(label=rownames(metadata9)), hjust=0.5, vjust=1.5, size=4)+ ggtitle("Bacteria (9) NMDS") + scale_color_gradient(low="blue", high = "red")
+```
+```{r echo=FALSE}
+ggsave("coda bact9 counts NMDS.pdf", height = 4, width = 5)
+```
+
+<br>
+
+Envfit. Temperature is the only signficant predictor.
+```{r echo=FALSE}
+clr_bact9_NMDSfit<- envfit(clr_bact9.NMDS ~ ., metadata9)
+clr_bact9_NMDSfit
+```
+```{r echo=FALSE}
+clr_bact9.CLUST<-hclust(clr_bact9.dist, method="average", member=NULL)
+plot(clr_bact9.CLUST, hang=-1, main="Bacteria (9)")
+```
+
+<br>
+
+**ANOSIM tests** on the clr-transformed data (Temp category and substratum).
+```{r echo=FALSE}
+library(vegan)
+bact9ANOSIMsubstr<-with(metadata9, anosim(clr_bact9.dist, Substratum))
+summary(bact9ANOSIMsubstr)
+```
+```{r echo=FALSE}
+library(vegan)
+bact9ANOSIMTcat<-with(metadata9, anosim(clr_bact9.dist, T_category))
+summary(bact9ANOSIMTcat)
+```
+**RESULT: Temperature category is a weak factor in bacterial diversity variation, substratum is not.**
+
+<br>
+
+### Eukarya
+```{r echo=FALSE}
+codaEuk9<-codaEuk23nonsingleton[c(11,13,14,15,17,18,20,22,23),]
+
+# remove any OTU with only 1 read. Drops from 16,731 to 5,999 OTUs.
+codaEuk9nonsingleton<-codaEuk9[,which(colSums(codaEuk9) >1)]
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, results='hide', fig.keep='all', fig.height=4.5, fig.width=6}
+
+# Imputation of zeros
+euk9_cmultRepl<-cmultRepl(codaEuk9nonsingleton, method="CZM", output="p-counts")
+
+# Centered log-ratio transformation
+clr_euk9<-apply(euk9_cmultRepl, 2, function(x){log(x)-mean(log(x))})
+
+# Calculate Aitchison distance matrix
+clr_euk9.dist<-dist(clr_euk9)
+clr_euk9.NMDS<-metaMDS(clr_euk9.dist, k=2)
+
+clr_euk9.NMDS.df<-data.frame(x=clr_euk9.NMDS$points[,1], y=clr_euk9.NMDS$points[,2], T_category=as.factor(metadata9[,5]), Vent_field=as.factor(metadata9[,3]), Temperature=metadata9[,4], Substratum=as.factor(metadata9[,6]))
+
+ggplot(data=clr_euk9.NMDS.df, aes(x=x, y=y, color=Temperature, shape=Substratum)) + geom_point(size=4) + geom_text_repel(aes(label=rownames(metadata9)), hjust=0.5, vjust=1.5, size=4)+ ggtitle("Eukarya (9) NMDS") + scale_color_gradient(low="blue", high = "red")
+```
+```{r echo=FALSE}
+ggsave("eukarya9 counts NMDS.pdf", height = 4, width = 5)
+```
+
+<br>
+
+Envfit. No signficant predictors.
+```{r echo=FALSE}
+clr_euk9_NMDSfit<- envfit(clr_euk9.NMDS ~ ., metadata9)
+clr_euk9_NMDSfit
+```
+
+<br>
+
+
+```{r echo=FALSE}
+clr_euk9.CLUST<-hclust(clr_euk9.dist, method="average", member=NULL)
+plot(clr_euk9.CLUST, hang=-1, main="Eukarya (9)")
+```
+
+<br>
+
+**ANOSIM tests** on the clr-transformed data (Temp category and substratum).
+```{r echo=FALSE}
+library(vegan)
+euk9ANOSIMsubstr<-with(metadata9, anosim(clr_euk9.dist, Substratum))
+summary(euk9ANOSIMsubstr)
+```
+```{r echo=FALSE}
+library(vegan)
+euk9ANOSIMTcat<-with(metadata9, anosim(clr_euk9.dist, T_category))
+summary(euk9ANOSIMTcat)
+```
+**RESULT: Neither temperature nor substratum affect variation in microeukaryote diveristy.**
+
+
+
+<br>
+
+### Archaea
+Sample ECw11 produced insuffient archaeal reads so there are only 8 samples included here.
+```{r echo=FALSE}
+codaArch8<-codaArch22nonsingleton[c(11,13,14,16,17,19,21,22),]
+
+# remove any OTU with only 1 read. Drops from 3,436 to 1,239 OTUs.
+codaArch8nonsingleton<-codaArch8[,which(colSums(codaArch8) >1)]
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, results='hide', fig.keep='all', fig.height=4.5, fig.width=6}
+
+metadata8<-metadata9[-2,]
+
+# Imputation of zeros
+arch8_cmultRepl<-cmultRepl(codaArch8nonsingleton, method="CZM", output="p-counts")
+
+# Centered log-ratio transformation
+clr_arch8<-apply(arch8_cmultRepl, 2, function(x){log(x)-mean(log(x))})
+
+# Calculate Aitchison distance matrix
+clr_arch8.dist<-dist(clr_arch8)
+clr_arch8.NMDS<-metaMDS(clr_arch8.dist, k=2)
+
+clr_arch8.NMDS.df<-data.frame(x=clr_arch8.NMDS$points[,1], y=clr_arch8.NMDS$points[,2], T_category=as.factor(metadata8[,5]), Vent_field=as.factor(metadata8[,3]), Temperature=metadata8[,4], Substratum=as.factor(metadata8[,6]))
+
+ggplot(data=clr_arch8.NMDS.df, aes(x=x, y=y, color=Temperature, shape=Substratum)) + geom_point(size=4) + geom_text_repel(aes(label=rownames(metadata8)), hjust=0.5, vjust=1.5, size=4)+ ggtitle("Archaea (8) NMDS") + scale_color_gradient(low="blue", high = "red")
+```
+```{r echo=FALSE}
+ggsave("archaea8 counts NMDS.pdf", height = 4, width = 5)
+```
+
+<br>
+
+Envfit. No signficant predictors.
+```{r echo=FALSE}
+clr_arch8_NMDSfit<- envfit(clr_arch8.NMDS ~ ., metadata8)
+clr_arch8_NMDSfit
+```
+
+```{r echo=FALSE}
+clr_arch8.CLUST<-hclust(clr_arch8.dist, method="average", member=NULL)
+plot(clr_arch8.CLUST, hang=-1, main="Archaea (8)")
+```
+
+<br>
+
+**ANOSIM tests** on the clr-transformed data (Temp category and substratum).
+```{r echo=FALSE}
+library(vegan)
+metadata8<-metadata9[-2,]
+arch8ANOSIMsubstr<-with(metadata8, anosim(clr_arch8.dist, Substratum))
+summary(arch8ANOSIMsubstr)
+```
+```{r echo=FALSE}
+library(vegan)
+arch8ANOSIMTcat<-with(metadata8, anosim(clr_arch8.dist, T_category))
+summary(arch8ANOSIMTcat)
+```
+**RESULT: Neither temperature or substratum have an effect on variation in archaeal diversity.**
+
+<br>
+
+## Microbes (all 23 samples)
+
+### Three domains, QPCR-balanced 
+```{r echo=FALSE, message=FALSE, warning=FALSE, results='hide', fig.keep='all', fig.height=4.5, fig.width=6.5}
+library(vegan)
+options(scipen=999) # avoids use of scientific notation for the session
+
+# Imputation of zeros
+balMic_cmultRepl<-cmultRepl(balMic, method="CZM", output = "p-counts")
+
+# Centered log-ratio transformation
+clr_balMic<-apply(balMic_cmultRepl, 2, function(x){log(x)-mean(log(x))})
+
+# Calculate Aitchison distance matrix
+clr_balMic.dist<-dist(clr_balMic)
+
+clr_balMic.NMDS<-metaMDS(clr_balMic.dist, k=2, trymax=1000)
+clr_balMic.NMDS.df<-data.frame(x=clr_balMic.NMDS$points[,1], y=clr_balMic.NMDS$points[,2], Source=as.factor(metadata23[,1]), Vent_field=as.factor(metadata23[,3]), Temperature=metadata23[,4], T_category=as.factor(metadata23[,5]), Substratum=as.factor(metadata23[,6]))
+
+ggplot(data=clr_balMic.NMDS.df, aes(x=x, y=y, color=Temperature, shape=Source)) + expand_limits(x=c(-100,150), y=c(-125,100)) + geom_point(size=5) + geom_text(aes(label=rownames(metadata23)), hjust=0.5, vjust=1.5, size=4) + labs(shape="Sample Type") + ggtitle("All domain OTUs QPCR-scaled") + scale_color_gradient(low="blue", high = "red") + theme(legend.text = element_text(size = 12), legend.title = element_text(size=14, face = "bold")) + scale_shape_discrete(labels=c("Background fluids", "Diffuse fluids", "Tubeworm grab"))
+```
+
+```{r echo=FALSE}
+ggsave("All domain OTUs scaled and converted NMDS.pdf", width=8, height=6)
+```
+Rel
+
+Envfit. Temperature is the only significant predictor.
+```{r echo=FALSE}
+clr_balMic_NMDSfit<- envfit(clr_balMic.NMDS ~ Temperature + Source + Vent_field + Substratum, metadata23)
+clr_balMic_NMDSfit
+```
+
+```{r echo=FALSE}
+clr_balMic.CLUST<-hclust(clr_balMic.dist, method="average", member=NULL)
+plot(clr_balMic.CLUST, hang=-1, main="All domains QPCR-balanced")
+```
+
+**ANOSIM tests** (Vent field, substratum, sample type, temperature category)
+```{r echo=FALSE}
+balMicANOSIMfield<-with(metadata23, anosim(clr_balMic.dist, Vent_field))
+summary(balMicANOSIMfield)
+```
+```{r echo=FALSE}
+balMicANOSIMfield<-with(metadata23, anosim(clr_balMic.dist, Source))
+summary(balMicANOSIMfield)
+```
+```{r echo=FALSE}
+balMicANOSIMfield<-with(metadata23, anosim(clr_balMic.dist, Substratum))
+summary(balMicANOSIMfield)
+```
+```{r echo=FALSE}
+balMicANOSIMfield<-with(metadata23, anosim(clr_balMic.dist, T_category))
+summary(balMicANOSIMfield)
+```
+**RESULT: Variation in microbial community diversity is not tied to any of the measured variables.**
+
+<br>
+
+### Bacteria
+```{r message=FALSE, warning=FALSE, results='hide', fig.keep='all', fig.height=4.5, fig.width=6}
+
+# Imputation of zeros.
+codaBact23_cmultRepl<-cmultRepl(codaBact23nonsingleton, method="CZM", output="p-counts")
+
+# Need metadata for the next part. Must be in the same order as the samples.
+metadata23<-metadata23[match(rownames(codaBact23nonsingleton),rownames(metadata23)),]
+
+# Centered log-ratio transformation
+clr_codaBact23<-apply(codaBact23_cmultRepl, 2, function(x){log(x)-mean(log(x))})
+
+# Calculate Aitchison distance matrix
+clr_codaBact23.dist<-dist(clr_codaBact23)
+
+# NMDS 
+clr_codaBact23.NMDS<-metaMDS(clr_codaBact23.dist, k=2)
+clr_codaBact23.NMDS.df<-data.frame(x=clr_codaBact23.NMDS$points[,1], y=clr_codaBact23.NMDS$points[,2], Source=as.factor(metadata23[,1]), Vent_field=as.factor(metadata23[,3]), Temperature=metadata23[,4], T_category=as.factor(metadata23[,5]), Substratum=as.factor(metadata23[,6]))
+
+ggplot(data=clr_codaBact23.NMDS.df, aes(x=x, y=y, color=Temperature, shape=Source)) + geom_point(size=4) + geom_text(aes(label=rownames(metadata23)), hjust=0.5, vjust=1.5, size=4)+ ggtitle("Bacteria (23)") + scale_color_gradient(low="blue", high = "red")
+```
+
+Envfit. Temperature is the one and only significant predictor.
+```{r echo=FALSE}
+clr_codaBact23_NMDSfit<- envfit(clr_codaBact23.NMDS ~ Vent_field + Substratum + Temperature + Source, metadata23)
+clr_codaBact23_NMDSfit
+```
+
+**ANOSIM tests** (Vent field, substratum, sample type, temperature category)
+```{r echo=FALSE}
+codaBact23ANOSIMfield<-with(metadata23, anosim(clr_codaBact23.dist, Vent_field))
+summary(codaBact23ANOSIMfield)
+```
+```{r echo=FALSE}
+codaBact23ANOSIMsubstr<-with(metadata23, anosim(clr_codaBact23.dist, Substratum))
+summary(codaBact23ANOSIMsubstr)
+```
+```{r echo=FALSE}
+codaBact23ANOSIMsource<-with(metadata23, anosim(clr_codaBact23.dist, Source))
+summary(codaBact23ANOSIMsource)
+```
+```{r echo=FALSE}
+codaBact23ANOSIMTcat<-with(metadata23, anosim(clr_codaBact23.dist, T_category))
+summary(codaBact23ANOSIMTcat)
+```
+**RESULT: Variation in bacterial diversity is tied to temperature, but not to vent field, substratum or sample type.**
+
+<br>
+
+### Eukarya
+```{r echo=FALSE, message=FALSE, warning=FALSE, results='hide', fig.keep='all', fig.height=4.5, fig.width=6}
+
+# Imputation of zeros. 
+codaEuk23_cmultRepl<-cmultRepl(codaEuk23nonsingleton, method="CZM", output="p-counts")
+
+# Centered log-ratio transformation
+clr_codaEuk23<-apply(codaEuk23_cmultRepl, 2, function(x){log(x)-mean(log(x))})
+
+# 'compositions' to calculate Aitchison distance matrix
+clr_codaEuk23.dist<-dist(clr_codaEuk23)
+
+# Take the Aitchison distance matrix into my standard pipeline
+clr_codaEuk23.NMDS<-metaMDS(clr_codaEuk23.dist, k=2)
+clr_codaEuk23.NMDS.df<-data.frame(x=clr_codaEuk23.NMDS$points[,1], y=clr_codaEuk23.NMDS$points[,2], Source=as.factor(metadata23[,1]), Vent_field=as.factor(metadata23[,3]), Temperature=metadata23[,4], T_category=as.factor(metadata23[,5]), Substratum=as.factor(metadata23[,6]))
+
+ggplot(data=clr_codaEuk23.NMDS.df, aes(x=x, y=y, color=Temperature, shape=Source)) + geom_point(size=4) + geom_text(aes(label=rownames(metadata23)), hjust=0.5, vjust=1.5, size=4)+ ggtitle("Eukarya (23) ") + scale_color_gradient(low="blue", high = "red")
+```
+
+Envfit. Sample type is a weak predictor.
+```{r echo=FALSE}
+clr_codaEuk23_NMDSfit<- envfit(clr_codaEuk23.NMDS ~ Vent_field + Substratum + Temperature + Source, metadata23)
+clr_codaEuk23_NMDSfit
+```
+
+<br>
+
+**ANOSIM tests** (Vent field, substratum, sample type, temperature category)
+```{r echo=FALSE}
+library(vegan)
+codaEuk23ANOSIMfield<-with(metadata23, anosim(clr_codaEuk23.dist, Vent_field))
+summary(codaEuk23ANOSIMfield)
+```
+```{r echo=FALSE}
+library(vegan)
+codaEuk23ANOSIMfield<-with(metadata23, anosim(clr_codaEuk23.dist, Substratum))
+summary(codaEuk23ANOSIMfield)
+```
+```{r echo=FALSE}
+library(vegan)
+codaEuk23ANOSIMfield<-with(metadata23, anosim(clr_codaEuk23.dist, Source))
+summary(codaEuk23ANOSIMfield)
+```
+```{r echo=FALSE}
+codaEuk23ANOSIMfield<-with(metadata23, anosim(clr_codaEuk23.dist, T_category))
+summary(codaEuk23ANOSIMfield)
+```
+**RESULT: Variation in microeukaryote diversity is not tied to any of the measured variables.**
+
+<br>
+
+### Archaea
+```{r echo=FALSE, message=FALSE, warning=FALSE, results='hide', fig.keep='all', fig.height=4.5, fig.width=6}
+library(zCompositions)
+
+# Imputation of zeros. 
+codaArch22_cmultRepl<-cmultRepl(codaArch22nonsingleton, method="CZM", output="p-counts")
+
+# Centered log-ratio transformation
+clr_codaArch22<-apply(codaArch22_cmultRepl, 2, function(x){log(x)-mean(log(x))})
+
+metadata22<-metadata23[-13,]
+  
+# 'compositions' to calculate Aitchison distance matrix
+clr_codaArch22.dist<-dist(clr_codaArch22)
+
+# Take the Aitchison distance matrix into my standard pipeline
+clr_codaArch22.NMDS<-metaMDS(clr_codaArch22.dist, k=2)
+clr_codaArch22.NMDS.df<-data.frame(x=clr_codaArch22.NMDS$points[,1], y=clr_codaArch22.NMDS$points[,2], Sample_type=as.factor(metadata22[,1]), Vent_field=as.factor(metadata22[,3]), Temperature=metadata22[,4], T_category=as.factor(metadata22[,5]), Substratum=as.factor(metadata22[,6]))
+
+ggplot(data=clr_codaArch22.NMDS.df, aes(x=x, y=y, color=Temperature, shape=Sample_type)) + geom_point(size=4) + geom_text(aes(label=rownames(metadata22)), hjust=0.5, vjust=1.5, size=4)+ ggtitle("Archaea (22)") + scale_color_gradient(low="blue", high = "red")
+```
+
+<br>
+
+Envfit. Temperature and sample type are significant predictors.
+```{r echo=FALSE}
+clr_codaArch22_NMDSfit<- envfit(clr_codaArch22.NMDS ~ Vent_field + Substratum + Temperature + Source, metadata22)
+clr_codaArch22_NMDSfit
+```
+<br>
+
+
+
+**ANOSIM tests** (Vent field, substratum, sample type, temperature category)
+```{r echo=FALSE}
+library(vegan)
+codaArch22ANOSIMfield<-with(metadata22, anosim(clr_codaArch22.dist, Vent_field))
+summary(codaArch22ANOSIMfield)
+```
+```{r echo=FALSE}
+library(vegan)
+codaArch22ANOSIMsource<-with(metadata22, anosim(clr_codaArch22.dist, Source))
+summary(codaArch22ANOSIMsource)
+```
+```{r echo=FALSE}
+library(vegan)
+codaArch22ANOSIMsubstr<-with(metadata22, anosim(clr_codaArch22.dist, Substratum))
+summary(codaArch22ANOSIMsubstr)
+```
+```{r echo=FALSE}
+library(vegan)
+codaArch22ANOSIMTcat<-with(metadata22, anosim(clr_codaArch22.dist, T_category))
+summary(codaArch22ANOSIMTcat)
+```
+**RESULT: Variation in archaeal diversity is tied to temperature and sample type.**
+
+<br>
+
+# Relative Abundance plots
+Convert counts to relatvie abundances for stacked bar plots.
+
+## Macrofauna
+Group "Others" include taxa that are always less than 2% relative abundance. 
+```{r fig.height=4.5, fig.width=5.5}
+# Convert count data to relative abundances (it must be as a matrix)
+macro9matrix<-as.matrix(macro9)
+Macro9rel<-as.data.frame(make_relative(macro9matrix))
+
+# Create row with maximum relative abundance for each species
+colMax<-function(Macro9rel) sapply(Macro9rel, max, na.rm=TRUE)  
+MaxRel<-colMax(Macro9rel)
+Macro9rel<-rbind(Macro9rel, "MaxRel"=MaxRel)
+
+# Order columns based on the maximum relative abundance 
+Macro9rel<-Macro9rel[, order(-Macro9rel[nrow(Macro9rel),])] 
+
+# Create "Other" column with species always less than 2% relative abundance
+Macro9rel$Others<-rowSums(Macro9rel[,c(17:41)])
+MacTax<-Macro9rel[1:9,-c(17:41)]
+MacTax$Sample<-rownames(MacTax)
+
+# Create long table 
+MacTaxLong<-melt(MacTax, id = "Sample")
+
+# Display taxa and samples in the desired order
+MacTaxLong$variable<-factor(MacTaxLong$variable, levels = c("Lepetodrilus_fucensis","Depressigyra_globulus","Paralvinella_palmiformis","Amphisamytha_carldarei","Paralvinella_sulfincola","Provanna_variabilis","Hydrozoa_non_ID","Euphilomedes_climax","Protomystides_verenae","Fucaria_striata","Munidopsis_alvisca","Branchinotogluma_tunnicliffeae","Pardalisca_endeavouri","Helicoradomenia_juani","Clypeosectus_curvus","Paralvinella_pandorae","Others"))
+
+MacTaxLong$Sample<-factor(MacTaxLong$Sample, levels=c("MVw13", "ECw11", "EMw3", "EMw5", "MVw12", "ECw10", "EMw1", "EMw4", "EMw8"))
+
+MACROcolors17 <- c("#fcd0a1","#ad2929","#0fa3b1","#81f5f5","#ffea51","#d68fd6","#6144bf","#f6ae2d","#8c1c13","#53917e","#f26326","#fffcc9","#7098d1","#cfea9f","#d26280","#0686d6","#979898")
+                   
+ggplot(MacTaxLong,aes(x=Sample, y=value, fill=variable, order=Sample)) + geom_bar(stat="identity", width=0.9) + scale_fill_manual(values=MACROcolors17, label=c("L. fucensis","D. globulus","P. palmiformis","A. carldarei","P. sulfincola","P. variabilis","Hydrozoa non ID","E. climax","P. verenae","F. striata","M. alvisca","B. tunnicliffeae","P. endeavouri","H. juani","C. curvus","P. pandorae","Others")) + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), legend.text=element_text(size=12), legend.title = element_blank()) + scale_y_continuous(expand = c(0,0)) + labs(x=NULL, y="Relative Abundance")
+```
+```{r echo=FALSE, message=FALSE}
+ggsave("Macro taxa plot.pdf")
+```
+
+## Meiofauna
+
+```{r echo=FALSE, fig.height=4, fig.width=6}
+meio9matrix<-as.matrix(meio9)
+meio9rel<-as.data.frame(make_relative(meio9matrix))
+
+# Create row with maximum relative abundance for each species
+colMax<-function(meio9rel) sapply(meio9rel, max, na.rm=TRUE) 
+MaxRel<-colMax(meio9rel)
+meio9rel<-rbind(meio9rel, "MaxRel"=MaxRel)
+# Order columns based on the maximum relative abundance 
+meio9rel<-meio9rel[, order(-meio9rel[nrow(meio9rel),])] 
+
+# Create "Other" column with species less than 2% relabund
+meio9rel$Others<-rowSums(meio9rel[,c(15:25)])
+MeTax<-meio9rel[1:9,-c(15:25)]
+MeTax$Sample<-rownames(MeTax)
+
+# Create long table 
+MeTaxLong<-melt(MeTax, id = "Sample")
+
+# Display taxa and samples in the desired order
+MeTaxLong$variable<-factor(MeTaxLong$variable, levels = c("Stygiopontius_quadrispinosus", "Aphotopontius_forcipatus", "Harpacticoid_spp", "juv_Lepetodrilus_fucensis", "Nemertean_non_ID", "cf_Thalassomonhystera", "Benthoxynus_spiculifer", "cf_Neochromadora", "Ophryotrocha_globopalpata", "Thomontocypris_cf_brightae", "juv_Amphisamytha_carldarei", "Copidognathus_papillatus", "Sphaerosyllis__ridgensis", "juv_Pardalisca_endeavouri","Others"))
+
+MeTaxLong$Sample<-factor(MeTaxLong$Sample, levels=c("EMw5","EMw3", "ECw11","MVw13","ECw10","EMw4","MVw12","EMw8","EMw1"))
+
+MEIOcolors15 <- c("#750d37","#0fa3b1","#6144bf","#f6ae2d","#7098d1","#a9bbaa","#ffea51","#abdafc","#f49390","#934b00","#81f5f5","#488243","#96291f","#b370b0","#a0acad")
+                   
+ggplot(MeTaxLong,aes(x=Sample, y=value, fill=variable, order=Sample)) + geom_bar(stat="identity", width=0.9) + scale_fill_manual(values=MEIOcolors15, name="Taxa", label=c("S. quadrispinosus", "A. forcipatus", "Harpacticoid spp.", "juv L. fucensis", "Nemertean non ID", "cf. Thalassomonhystera", "B. spiculifer", "cf. Neochromadora", "O. globopalpata", "T. cf. brightae", "juv A. carldarei", "C. papillatus", "S. ridgensis", "juv P. endeavouri","Others")) + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), legend.text=element_text(size=12), legend.title = element_blank()) + scale_y_continuous(expand = c(0,0))  + labs(x=NULL, y="Relative Abundance")
+```
+
+```{r echo=FALSE, message=FALSE}
+ggsave("Meio taxa plot.pdf")
+```
+
+## Bacteria 
+For all microbial plots, the group "Others" includes taxa that are always less than 1% relative abundance. Microbial OTUs were aggregated by high level taxonomies in Excel.
+```{r fig.height=4.5, fig.width=8}
+TaxaB23<-read.csv("Bact23_high_level_taxa.csv", header = TRUE, sep = ",")
+TaxaB23LONG<- melt(TaxaB23, id = c("Sample", "Type"))
+
+TaxaB23LONG$variable<-factor(TaxaB23LONG$variable,levels=c("Alphaproteobacteria","Gammaproteobacteria","Deltaproteobacteria","Proteobacteria","Bacteroidetes","Epsilonbacteraeota","Acidobacteria","Actinobacteria","Aquificae","Chloroflexi","Firmicutes","Nitrospinae","Patescibacteria","Others","Bacteria"))
+
+# Worms ordered low to high basal temperature
+TaxaB23LONG$Sample<-factor(TaxaB23LONG$Sample, levels=c("bkEM","bkEC","bkMV","EMf3","ECf11","EMf2","ECf9","MVf12","EMf7","EMf1","EMw6","EMw3","ECw11","EMw2","EMw5","ECw9","MVw13","MVw12","ECw10","EMw7","EMw1","EMw4","EMw8"))
+
+ChromatBact15<- c("#c60609","#f3722c","#f8961e","#f9c74f","#9fc681","#47682f","#6bc4a9","#327e67","#91a9bd","#577590","#b1a0f1","#7a5ee5","#5dbdd5","#695746","#928477")
+
+labels<-c(Bkgd="Bkgd", Diffuse="Diffuse", Tubeworms="Tubeworm grabs")
+
+ggplot(TaxaB23LONG, aes(x=Sample, y=value, fill=variable, order=variable)) + geom_bar(stat="identity", width=0.9) + facet_grid(. ~ Type, labeller=labeller(Type=labels), scales="free", space="free") + scale_fill_manual(values=ChromatBact15, name="Bacteria", label=c("Alphaproteobacteria","Gammaproteobacteria","Deltaproteobacteria","Other Proteobacteria","Bacteroidetes","Epsilonbacteraeota","Acidobacteria","Actinobacteria","Aquificae","Chloroflexi","Firmicutes","Nitrospinae","Patescibacteria","Others","Unclassified Bacteria")) + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), legend.text=element_text(size=9), legend.title = element_text(size=12)) + scale_y_continuous(expand = c(0,0)) + labs(x=NULL, y="Relative Adundance")
+```
+
+```{r echo=FALSE}
+ggsave("Bacteria only taxa plot.pdf", height=3.5, width=7)
+```
+
+
+## Eukarya 
+```{r}
+TaxaE23<-read.csv("Euk23_high_level_taxa.csv", header = TRUE, sep = ",")
+```
+
+```{r echo=FALSE, fig.height=4.5, fig.width=8}
+TaxaE23LONG<- melt(TaxaE23, id = c("Sample", "Type"))
+
+TaxaE23LONG$variable<-factor(TaxaE23LONG$variable,levels=c("Alveolata_Ciliophora","Alveolata_Apicomplexa","Alveolata_Dinoflagellata","Alveolata_Perkinsea","Alveolata","Opisthokonta","Amoebozoa","Rhizaria_Cercozoa","Rhizaria_Radiolaria","Rhizaria","Excavata","Apusozoa","Stramenopiles","Hacrobia","Archaeplastida","Eukaryota"))
+
+TaxaE23LONG$Sample<-factor(TaxaE23LONG$Sample, levels=c("bkEM","bkEC","bkMV","EMf3","ECf11","EMf2","ECf9","MVf12","EMf7","EMf1","EMw6","EMw3","ECw11","EMw2","EMw5","ECw9","MVw13","MVw12","ECw10","EMw7","EMw1","EMw4","EMw8"))
+
+ChromatEuks16<- c("#603d13","#a06937","#cb7641","#d79a69","#dab467","#55acc2","#779d5a","#e8cd4e","#ffe374","#ffeec6","#6947d7","#a997f0","#336699","#bd4d4e","#980f11","#928477")
+
+ggplot(TaxaE23LONG, aes(x=Sample, y=value, fill=variable, order=variable)) + geom_bar(stat="identity", width=0.9) + facet_grid(. ~ Type, labeller=labeller(Type=labels), scales="free", space="free") + scale_fill_manual(values=ChromatEuks16, name="Eukarya", label=c("Ciliophora","Apicomplexa","Dinoflagellata","Perkinsea","Alveolata","Opisthokonta","Amoebozoa","Cercozoa","Radiolaria","Unclassified Rhizaria","Excavata","Apusozoa","Stramenopila","Hacrobia","Archaeplastida","Unclassified Eukarya")) + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), legend.text=element_text(size=9), legend.title = element_text(size=12)) + scale_y_continuous(expand = c(0,0)) + labs(x=NULL, y="Relative Abundance")
+```
+```{r echo=FALSE}
+ggsave("Eukarya only taxa plot.pdf", height=3.5, width=7)
+```
+
+
+## Archaea
+```{r}
+TaxaA22<-read.csv("Arch22_high_level_taxa.csv", header = TRUE, sep = ",")
+```
+
+```{r echo=FALSE, fig.height=4.5, fig.width=8}
+TaxaA22LONG<- melt(TaxaA22, id = c("Sample", "Type"))
+
+TaxaA22LONG$variable<-factor(TaxaA22LONG$variable, levels=c("Thaumarchaeota_Nitrososphaeria","Euryarchaeota_Methanomicrobia","Euryarchaeota_Thermoplasmata","Euryarchaeota_Thermococci","Euryarchaeota_Archaeoglobi","Euryarchaeota_Methanococci","Crenarchaeota_Thermoprotei","Asgardaeota","Asgardaeota_Odinarchaeia","Nanohaloarchaeia","Woesearchaeia","Diapherotrites_Micrarchaeia","Other_Archaea","Archaea"))
+
+TaxaA22LONG$Sample<-factor(TaxaA22LONG$Sample, levels=c("bkEM","bkEC","bkMV","EMf3","ECf11","EMf2","ECf9","MVf12","EMf7","EMf1","EMw6","EMw3","ECw11","EMw2","EMw5","ECw9","MVw13","MVw12","ECw10","EMw7","EMw1","EMw4","EMw8"))
+
+ChromatArch14<-c("#5c5fe8","#597644","#779d58","#90be6d","#accf92","#c8dfb6","#ffe374","#af7297","#7d1c59","#72a6c9","#315779","#f6ae2d","#8a0e0f","#928477")
+
+ggplot(TaxaA22LONG, aes(x=Sample, y=value, fill=variable, order=variable)) + geom_bar(stat="identity", width=0.9) + facet_grid(. ~ Type, labeller=labeller(Type=labels), scales="free", space="free") + scale_fill_manual(values=ChromatArch14, name="Archaea", label=c("Nitrososphaeria","Methanomicrobia","Thermoplasmata","Thermococci","Archaeoglobi","Methanococci","Thermoprotei","Asgardaeota","Odinarchaeia","Nanohaloarchaeia","Woesearchaeia","Micrarchaeia","Other Archaea","Unclassified Archaea")) + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), legend.text=element_text(size=9), legend.title=element_text(size = 12)) + scale_y_continuous(expand = c(0,0)) + labs(x=NULL, y="Relative Abundance")
+```
+```{r echo=FALSE}
+ggsave("Archaea only taxa plot.pdf", height=3.5, width=7)
+```
+
+    
+## Balanced microbial community
+```{r fig.height=4.5, fig.width=8}
+MG<-read.csv("Combined_micro_major_groups.csv", header=TRUE, sep=",")
+
+MG$Taxa<-factor(MG$Taxa, levels=c("Bacteria-Gammaproteobacteria", "Bacteria-Alphaproteobacteria", "Bacteria-Bacteroidetes", "Bacteria-Epsilonbacteraeota", "Bacteria-Deltaproteobacteria", "Archaea-Thaumarchaeota", "Archaea-Euryarchaeota", "Bacteria-Patescibacteria", "Bacteria-Chloroflexi", "Eukaryota-Alveolata", "Eukaryota-Rhizaria", "Bacteria", "Bacteria-Actinobacteria", "Bacteria-Proteobacteria", "Bacteria-Betaproteobacteriales", "Eukaryota-Opisthokonta", "Eukaryota", "Archaea-Asgardaeota", "Bacteria-Acidobacteria", "Eukaryota-Amoebozoa", "Bacteria-Aquificae", "Archaea-Crenarchaeota", "Bacteria-Other", "Archaea-Other", "Eukaryota-Other"))
+
+# Ordered according to hierarchichal clustering dendrogram
+MG$source<-factor(MG$source, levels=c("EMf11","bkMV","bkEC","bkEM","EMf3","EMf2","ECf9","EMf1","EMf7","MVf12","MVw12","EMw1","ECw10","EMw7","EMw4","EMw8","MVw13","ECw11","ECw9","EMw3","EMw6","EMw2","EMw5"))
+
+TAXAcolors25 <- c("#2bd9fe","#fffcc9","#45cb85","#ad2929","#46237a","#f26326","#0686d6","#fcd0a1","#53917e","#470ff4","#cc2084","#63535b","#e1dd8f","#37a4bf","#cfea9f","#750d37","#6144bf","#7098d1","#f6ae2d","#81f5f5","#5c5fe8","#f49390","#979898","#a0acad","#bcb9b8")
+
+ggplot(MG, aes(x=source, y=relabund, fill=Taxa, order=source)) + geom_bar(stat="identity", width=0.9) + scale_fill_manual(values=TAXAcolors25, labels=c("Gammaproteobacteria", "Alphaproteobacteria", "Bacteroidetes", "Epsilonbacteraeota", "Deltaproteobacteria", "Thaumarchaeota", "Euryarchaeota", "Patescibacteria", "Chloroflexi", "Alveolata", "Rhizaria", "Uncl. Bacteria", "Actinobacteria", "Proteobacteria", "Betaproteobacteria", "Opisthokonta", "Uncl. Eukaryota", "Asgardaeota", "Acidobacteria", "Amoebozoa", "Aquificae", "Crenarchaeota", "Other Bacteria", "Other Archaea", "Other Eukarya")) + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), legend.title = element_text(size=14, face = "bold"), legend.text=element_text(size=9)) + scale_y_continuous(expand = c(0,0)) + labs(x=NULL, y="Relative Abundance")
+```
+    
+## Details of top 4 bacterial groups
+Code only shown for Alphaproteobacteria.    
+```{r fig.height=4.5, fig.width=9.5}
+alphas<-read.csv("Alphas.csv", header=TRUE, sep=",")
+alphasLONG<- melt(alphas, id = c("Sample"))
+
+AlphaColors <- c("#cc2084","#63535b","#e1dd8f","#37a4bf","#cfea9f","#750d37","#6144bf","#7098d1","#f6ae2d","#81f5f5","#5c5fe8","#f49390","#934b00","#ffea51","#488243","#fffcc9","#45cb85","#ad2929","#46237a","#f26326","#0686d6","#fcd0a1","#53917e","#470ff4","#CCC9CF","#CCC9CF","#CCC9CF")
+
+alphasLONG$variable<-factor(alphasLONG$variable, levels=c("Rhodobacteraceae","SAR11_clade","unknown_Alphaproteobacteria","Roseobacter_clade_NAC11_7_lineage","Parvibaculales_PS1_clade","Kordiimonadales","Robiginitomaculum","Euryhalocaulis","Sedimentitalea","Bradyrhizobium","Pseudahrensia","Rhodospirillales_AEGEAN_169_marine_group","Devosiaceae","Rhizobiales","Hellea","Methylobacterium","Beijerinckiaceae","Aestuariispira","Nisaeaceae_OM75_clade","Kiloniellaceae","Parvularculaceae","Magnetospiraceae","Parvibaculaceae","Other_Alphaproteobacteria"))
+
+alphasLONG$Sample<-factor(alphasLONG$Sample, levels=c("ECf11","bkMV","bkEC","bkEM","EMf3","EMf2","ECf9","EMf1","EMf7","MVf12","MVw12","EMw1","ECw10","EMw7","EMw4","EMw8","MVw13","ECw11","ECw9","EMw3","EMw6","EMw2","EMw5"))
+                            
+ggplot(alphasLONG, aes(x=Sample, y=value, fill=variable, order=variable)) + geom_bar(stat="identity", width=0.9) + scale_fill_manual(values=AlphaColors, name=NULL, labels=c("Rhodobacteraceae","SAR11 clade","Unknown Alphaproteobacteria","Roseobacter clade NAC11-7","Parvibaculales clade PS1","Kordiimonadales","Robiginitomaculum","Euryhalocaulis","Sedimentitalea","Bradyrhizobium","Pseudahrensia","Rhodospirillales clade AEGEAN-169","Devosiaceae","Rhizobiales","Hellea","Methylobacterium","Beijerinckiaceae","Aestuariispira","Nisaeaceae clade OM75","Kiloniellaceae","Parvularculaceae","Magnetospiraceae","Parvibaculaceae","Other Alphaproteobacteria")) + theme(axis.text.x=element_text(size=11,angle=90,hjust=1,vjust=0.5), legend.text=element_text(size=9)) + labs(x=NULL, y="Relative Abundance") 
+```
+```{r echo=FALSE}
+ggsave("Alphas plot.pdf", height = 6, width = 12)
+```
+
+```{r}
+gammas<-read.csv("Gammas.csv", header=TRUE, sep=",")
+```
+
+```{r echo=FALSE, fig.height=4.5, fig.width=9.5}
+gammasLONG<- melt(gammas, id = c("Sample"))
+
+GammaColors <- c("#470ff4","#CCC9CF","#2bd9fe","#ad2929","#45cb85","#fffcc9","#46237a","#3e517a","#0686d6","#fcd0a1","#53917e","#cc2084","#63535b","#e1dd8f","#37a4bf","#cfea9f","#750d37","#6144bf","#7098d1","#f6ae2d","#81f5f5","#5c5fe8","#f49390","#934b00","#ffea51","#488243","#fffcc9","#45cb85","#ad2929","#46237a","#f26326","#0686d6","#fcd0a1","#53917e")
+
+#TAXAcolors36 <- c("#2bd9fe","#fffcc9","#45cb85","#ad2929","#46237a","#3e517a","#0686d6","#fcd0a1","#53917e","#470ff4","#cc2084","#63535b","#e1dd8f","#37a4bf","#cfea9f","#750d37","#6144bf","#7098d1","#f6ae2d","#a9bbaa","#5c5fe8","#f49390","#934b00","#ffea51","#81f5f5","#488243","#96291f","#b370b0","#c9ddff","#abdafc","#f26326","#fcd0a1", "#45cb85","#979898","#a0acad","#bcb9b8")
+
+gammasLONG$variable<-factor(gammasLONG$variable, levels=c("Pseudoalteromonas","Dasania","Ectothiorhodospiraceae","Marine_Methylotrophic_Group_3","unknown_Gammaproteobacteria","Pseudomonas","Cycloclasticus","Shewanella","Halieaceae","Alteromonadales","SUP05_cluster","Oceaniserpentilla","Vibrio","Arenicellaceae","Spongiibacteraceae","Pseudoalteromonadaceae","UBA10353_marine_group","Colwellia","Methylomonaceae","Psychromonas","Psychrosphaera","Alteromonas","Marimicrobium","Thiotrichaceae","Spongiispira","Thiohalorhabdaceae","Nitrincolaceae","KI89A_clade","Cellvibrionales","Aquicella","Halioglobus","Other_Gammaproteobacteria"))
+
+gammasLONG$Sample<-factor(gammasLONG$Sample, levels=c("ECf11","bkMV","bkEC","bkEM","EMf3","EMf2","ECf9","EMf1","EMf7","MVf12","MVw12","EMw1","ECw10","EMw7","EMw4","EMw8","MVw13","ECw11","ECw9","EMw3","EMw6","EMw2","EMw5"))
+                            
+ggplot(gammasLONG, aes(x=Sample, y=value, fill=variable, order=variable)) + geom_bar(stat="identity", width=0.9) + scale_fill_manual(values=GammaColors, name=NULL, labels=c("Pseudoalteromonas","Dasania","Ectothiorhodospiraceae","Marine Methylotrophic Group 3","Unknown Gammaproteobacteria", "Pseudomonas", "Cycloclasticus", "Shewanella", "Halieaceae","Alteromonadales","SUP05 cluster","Oceaniserpentilla","Vibrio","Arenicellaceae","Spongiibacteraceae","Pseudoalteromonadaceae","UBA10353 marine group", "Colwellia", "Methylomonaceae","Psychromonas","Psychrosphaera","Alteromonas","Marimicrobium","Thiotrichaceae","Spongiispira","Thiohalorhabdaceae","Nitrincolaceae","KI89A clade","Cellvibrionales","Aquicella","Halioglobus","Other Gammaproteobacteria")) + theme(axis.text.x=element_text(size=11,angle=90,hjust=1,vjust=0.5), legend.text=element_text(size=9)) + labs(x=NULL, y="Relative Abundance") 
+```
+```{r echo=FALSE}
+ggsave("Gammas plot.pdf", height = 6, width = 12)
+```
+
+```{r}
+bacteroidetes<-read.csv("Bacteroidetes.csv", header=TRUE, sep=",")
+```
+
+```{r echo=FALSE, fig.height=4.5, fig.width=9.5}
+bacteroidetesLONG<- melt(bacteroidetes, id = c("Sample"))
+
+BacteroidetesColors <- c("#37a4bf","#cfea9f","#f26326","#750d37","#6144bf","#7098d1","#f6ae2d","#a9bbaa","#5c5fe8","#f49390","#934b00","#ffea51","#81f5f5","#488243","#96291f","#b370b0","#c9ddff","#3e517a","#0686d6","#fcd0a1","#53917e","#979898")
+
+#TAXAcolors36 <- c("#2bd9fe","#fffcc9","#45cb85","#ad2929","#46237a","#3e517a","#0686d6","#fcd0a1","#53917e","#470ff4","#cc2084","#63535b","#e1dd8f","#37a4bf","#cfea9f","#750d37","#6144bf","#7098d1","#f6ae2d","#a9bbaa","#5c5fe8","#f49390","#934b00","#ffea51","#81f5f5","#488243","#96291f","#b370b0","#c9ddff","#abdafc","#f26326","#fcd0a1", "#45cb85","#979898","#a0acad","#bcb9b8")
+
+bacteroidetesLONG$variable<-factor(bacteroidetesLONG$variable, levels=c("Carboxylicivirga","Crocinitomicaceae","Flavobacteriaceae","clade_VC2.1_Bac22","unclassified_Bacteroidia","Marinifilum","Lentimicrobiaceae","Marinifilaceae","Bacteroidales","Ichthyobacterium","Maritimimonas","clade_BD2_2","Cryomorphaceae","Flavobacteriales_NS9_marine_group","Sphingobacteriales","Cyclobacteriaceae","Actibacter","Spongiiferula","Aquibacter","Crocinitomix","Flavobacteriales","Other_Bacteroidetes"))
+
+bacteroidetesLONG$Sample<-factor(bacteroidetesLONG$Sample, levels=c("ECf11","bkMV","bkEC","bkEM","EMf3","EMf2","ECf9","EMf1","EMf7","MVf12","MVw12","EMw1","ECw10","EMw7","EMw4","EMw8","MVw13","ECw11","ECw9","EMw3","EMw6","EMw2","EMw5"))
+                            
+ggplot(bacteroidetesLONG, aes(x=Sample, y=value, fill=variable, order=variable)) + geom_bar(stat="identity", width=0.9) + scale_fill_manual(values=BacteroidetesColors, name=NULL, labels=c("Carboxylicivirga","Crocinitomicaceae","Flavobacteriaceae","clade VC2.1 Bac22","unclassified Bacteroidia","Marinifilum","Lentimicrobiaceae","Marinifilaceae","Bacteroidales","Ichthyobacterium","Maritimimonas","clade BD2-2","Cryomorphaceae","Flavobacteriales NS9 marine group","Sphingobacteriales","Cyclobacteriaceae","Actibacter","Spongiiferula","Aquibacter","Crocinitomix","Flavobacteriales","Other Bacteroidetes")) + theme(axis.text.x=element_text(size=11,angle=90,hjust=1,vjust=0.5), legend.text=element_text(size=9)) + labs(x=NULL, y="Relative Abundance") 
+```
+```{r echo=FALSE}
+ggsave("Bacteroidetes plot.pdf", height = 6, width = 12)
+```
+
+```{r}
+epsilons<-read.csv("Epsilons.csv", header=TRUE, sep=",")
+```
+
+```{r echo=FALSE, fig.height=4.5, fig.width=6.5}
+epsilonsLONG<- melt(epsilons, id = c("Sample"))
+
+epsilonsColors <- c("#488243","#fffcc9","#45cb85","#ad2929","#46237a","#f26326","#0686d6","#fcd0a1","#979898")
+
+#TAXAcolors36 <- c("#2bd9fe","#fffcc9","#45cb85","#ad2929","#46237a","#3e517a","#0686d6","#fcd0a1","#53917e","#470ff4","#cc2084","#63535b","#e1dd8f","#37a4bf","#cfea9f","#750d37","#6144bf","#7098d1","#f6ae2d","#a9bbaa","#5c5fe8","#f49390","#934b00","#ffea51","#81f5f5","#488243","#96291f","#b370b0","#c9ddff","#abdafc","#f26326","#fcd0a1", "#45cb85","#979898","#a0acad","#bcb9b8")
+
+epsilonsLONG$variable<-factor(epsilonsLONG$variable, levels=c("Arcobacter","Nitratifractor","Hydrogenimonas","Campylobacterales","Sulfurovum","Nitratiruptor","Sulfurimonas","Helicobacteraceae","Other_Epsilonbacteraeota"))
+
+epsilonsLONG$Sample<-factor(epsilonsLONG$Sample, levels=c("ECf11","bkMV","bkEC","bkEM","EMf3","EMf2","ECf9","EMf1","EMf7","MVf12","MVw12","EMw1","ECw10","EMw7","EMw4","EMw8","MVw13","ECw11","ECw9","EMw3","EMw6","EMw2","EMw5"))
+                            
+ggplot(epsilonsLONG, aes(x=Sample, y=value, fill=variable, order=variable)) + geom_bar(stat="identity", width=0.9) + scale_fill_manual(values=epsilonsColors, name=NULL, labels=c("Arcobacter","Nitratifractor","Hydrogenimonas","Campylobacterales","Sulfurovum","Nitratiruptor","Sulfurimonas","Helicobacteraceae","Other Epsilonbacteraeota")) + theme(axis.text.x=element_text(size=11,angle=90,hjust=1,vjust=0.5), legend.text=element_text(size=9)) + labs(x=NULL, y="Relative Abundance") 
+```
+
+```{r echo=FALSE}
+ggsave("Epsilons plot.pdf", height = 6, width = 12)
+```
+
+<br>
+
+# Enriched species/OTUs
+Species and OTUs that differentiated between different sample types (tubeworm grabs, diffuse fluids and background fluids) and grab sample temperature categories (highT, lowT) were identified using ALDEx2. Microbes were analyzed from all 13 grab samples (6 highT, 7 lowT) and 10 fluid samples (7 diffuse, 3 background) using both individual domains and the QPCR-balanced microbial assemblage. Fauna were analyzed from 9 grab samples (5 highT, 4 lowT). We include an analysis example below, but do not include all tests for brevity.
+
+```{r message=FALSE, warning=FALSE}
+library(ALDEx2)
+
+# create the 2-state condition for comparison
+tempx2<-as.vector(metadata9$T_category)
+tempx2
+
+# ALDEx2 modular mode 
+flip_mac9<-as.data.frame(t(macro9))    
+clr_mac9byT<-aldex.clr(flip_mac9, tempx2, mc.samples = 128, denom="all")
+kw_mac9byT<-aldex.kw(clr_mac9byT)
+kw_mac9byT.effect<-aldex.effect(clr_mac9byT, tempx2, verbose=FALSE)
+mac9byT.all<-data.frame(kw_mac9byT, kw_mac9byT.effect)
+
+# mac9byT.all has details of differential taxa between highT and lowT (plotted in red below)
+
+aldex.plot(mac9byT.all, type = "MW", test="glm", xlab="Dispersion", ylab = "Difference", all.cex = 1.5, all.pch = 16, all.col="lightgrey", rare.col = "black")
+```
+
+* In this case, macrofauna enriched in highT assemblages (effect < -1, Benjamini-Hochberg corrected p-values < 0.1 for GLM test):
+  + *Paralvinella sulfincola*
+  + *Paralvinella pandorae*
+  + *Depressigyra globulus*
+  + *Paralvinella palmiformis*
+  + *Branchinotogluma tunnicliffeae*
+* Macrofauna enriched in lowT assemblages (effect > 1):
+  + *Amphisamytha caldarei*
+  + *Helicoradomenia juani*
+  
+<br>
+
+# Plotting enriched species/OTUs    
+
+Microbes presented here are from ALDEx2 tests using the QPCR-balanced microbial assemblage. Taxa with absolute effect values >1 were compiled in Excel for plotting.
+
+## HighT vs. lowT grabs
+```{r fig.height=10, fig.width=7}
+htlteBAL <-read.csv("enriched_HTvsLT_grabs.csv", header=TRUE, sep=",") 
+htlteBAL$range<- ifelse(htlteBAL$Effect <0, "below", "above")  # "above"= low T   "below"= high T
+htlteBAL <- htlteBAL[order(htlteBAL$Effect), ]
+htlteBAL$Identity<-factor(htlteBAL$Identity, levels=htlteBAL$Identity) # keeps the order for the plot rather than going alphabetical
+
+ggplot(htlteBAL, aes(x=Identity, y=Effect, label=Effect)) + geom_bar(stat='identity', aes(fill=Domain), width=0.6) +  scale_fill_manual(name=NULL, labels=c("Archaea", "Bacteria", "Eukarya", "Macrofauna", "Meiofauna") , values = c("Archaea"="#abdafc", "Bacteria"="#0686d6", "Eukarya"="#cfea9f", "Macrofauna"="#f6ae2d", "Meiofauna"="#f26326")) + theme(axis.text.x = element_text(size=8), axis.title.x = element_text(size=9), axis.text.y = element_text(size=6.0), axis.title.y = element_blank() ,legend.position = "none") + ggtitle("HighT vs. LowT grabs") + scale_x_discrete(position="bottom") + coord_flip()
+```
+
+## HighT grabs vs. diffuse
+All 6 highT grab samples and 3 associated diffuse fluid samples.
+
+```{r echo=FALSE, fig.height=4, fig.width=5}
+highTwde <-read.csv("enriched_HTdiffuse_vs_grabs.csv", header=TRUE, sep=",") 
+highTwde$range<- ifelse(highTwde$Effect <0, "below", "above")   # "above"= grabs   "below"= diffuse
+highTwde <- highTwde[order(highTwde$Effect), ]
+highTwde$Identity<-factor(highTwde$Identity, levels=highTwde$Identity) # keeps the order for the plot rather than going alphabetical
+
+ggplot(highTwde, aes(x=Identity, y=Effect, label=Effect)) + geom_bar(stat='identity', aes(fill=Domain), width=0.7) +  scale_fill_manual(name=NULL, labels=c("Bacteria", "Eukarya") , values = c("Bacteria"="#0686d6", "Eukarya"="#cfea9f")) + theme(axis.text.x = element_text(size=12), axis.text.y = element_text(size=9), axis.title.y=element_blank() ,legend.position = "none") + ggtitle("HighT grabs vs. diffuse fluids") + scale_x_discrete(position="top") + coord_flip()
+```
+
+## LowT grabs vs. diffuse
+All 7 lowT grab samples and 4 associated diffuse fluid samples.
+
+```{r echo=FALSE, fig.height=10, fig.width=7}
+lowTwde <-read.csv("enriched_lowTdiffuse_vs_grabs.csv", header=TRUE, sep=",") 
+lowTwde$range<- ifelse(lowTwde$Effect <0, "below", "above")
+lowTwde <- lowTwde[order(lowTwde$Effect), ]
+lowTwde$Identity<-factor(lowTwde$Identity, levels=lowTwde$Identity) # keeps the order for the plot rather than going alphabetical
+
+ggplot(lowTwde, aes(x=Identity, y=Effect, label=Effect)) + geom_bar(stat='identity', aes(fill=Domain), width=0.7) +  scale_fill_manual(name=NULL, labels=c("Archaea","Bacteria", "Eukarya") , values = c("Archaea"="#abdafc","Bacteria"="#0686d6", "Eukarya"="#cfea9f")) + theme(axis.text.x = element_text(size=12), axis.text.y = element_text(size=7), axis.title.y = element_blank(), legend.position = "none") + ggtitle("LowT grabs vs. diffuse fluids") + scale_x_discrete(position="top") + coord_flip()
+```  
+
+<br>  
+  
+# Congruence
+Symmetric procrustes analysis (function 'procrustes') and significance testing (function 'protest') performed on pairs of NMDS ordinations.
+
+## Eight sample NMDS
+Archaeal reads were insufficient from sample ECw11 so NMDS plots without this sample for the other size classes and microbial domains will be necessary for comparisons.
+```{r echo=FALSE, message=FALSE, warning=FALSE, results='hide', fig.keep='all', fig.height=4.5, fig.width=6}
+mac8<-macro9[-2,]
+
+# 'Imputation of zeros
+mac8_cmultRepl<-cmultRepl(mac8, method="CZM", output="p-counts")
+
+# Centered log-ratio transformation
+clr_mac8<-apply(mac8_cmultRepl, 2, function(x){log(x)-mean(log(x))})
+
+# Calculate Aitchison distance matrix
+clr_mac8.dist<-dist(clr_mac8)
+clr_mac8.NMDS<-metaMDS(clr_mac8.dist, k=2)
+
+clr_mac8.NMDS.df<-data.frame(x=clr_mac8.NMDS$points[,1], y=clr_mac8.NMDS$points[,2], T_category=as.factor(metadata8[,5]), Vent_field=as.factor(metadata8[,3]), Temperature=metadata8[,4], Substratum=as.factor(metadata8[,6]))
+
+ma8<-ggplot(data=clr_mac8.NMDS.df, aes(x=x, y=y, color=Temperature, shape=Substratum)) + geom_point(size=4) + geom_text_repel(aes(label=rownames(metadata8)), hjust=0.5, vjust=1.5, size=6)+ ggtitle("Macrofauna8") + scale_color_gradient(low="blue", high = "red")
+```
+
+```{r echo=FALSE, warning=FALSE, message=FALSE, results='hide', fig.keep='all', fig.height=4.5, fig.width=6}
+meio8<-meio9[-2,]
+# Imputation of zeros
+meio8_cmultRepl<-cmultRepl(meio8, method="CZM", output="p-counts")
+
+# Centered log-ratio transformation
+clr_meio8<-apply(meio8_cmultRepl, 2, function(x){log(x)-mean(log(x))})
+
+# Calculate Aitchison distance matrix
+clr_meio8.dist<-dist(clr_meio8)
+clr_meio8.NMDS<-metaMDS(clr_meio8.dist, k=2)
+
+clr_meio8.NMDS.df<-data.frame(x=clr_meio8.NMDS$points[,1], y=clr_meio8.NMDS$points[,2], T_category=as.factor(metadata8[,5]), Vent_field=as.factor(metadata8[,3]), Temperature=metadata8[,4], Substratum=as.factor(metadata8[,6]))
+
+me8<-ggplot(data=clr_meio8.NMDS.df, aes(x=x, y=y, color=Temperature, shape=Substratum)) + geom_point(size=4) + geom_text_repel(aes(label=rownames(metadata8)), hjust=0.5, vjust=1.5, size=6)+ ggtitle("Meiofauna8") + scale_color_gradient(low="blue", high = "red")
+```
+
+```{r echo=FALSE, warning=FALSE, message=FALSE, results='hide', fig.keep='all', fig.height=4.5, fig.width=6}
+codaBact8<-codaBact9[-2,]
+  
+# Imputation of zeros. 
+bact8_cmultRepl<-cmultRepl(codaBact8, method="CZM", output="p-counts")
+
+# Centered log-ratio transformation
+clr_bact8<-apply(bact8_cmultRepl, 2, function(x){log(x)-mean(log(x))})
+
+# Calculate Aitchison distance matrix
+clr_bact8.dist<-dist(clr_bact8)
+clr_bact8.NMDS<-metaMDS(clr_bact8.dist, k=2)
+
+clr_bact8.NMDS.df<-data.frame(x=clr_bact8.NMDS$points[,1], y=clr_bact8.NMDS$points[,2], T_category=as.factor(metadata8[,5]), Vent_field=as.factor(metadata8[,3]), Temperature=metadata8[,4], Substratum=as.factor(metadata8[,6]))
+
+ba8<-ggplot(data=clr_bact8.NMDS.df, aes(x=x, y=y, color=Temperature, shape=Substratum)) + geom_point(size=4) + geom_text_repel(aes(label=rownames(metadata8)), hjust=0.5, vjust=1.5, size=6)+ ggtitle("Bacteria8") + scale_color_gradient(low="blue", high = "red")
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, results='hide', fig.keep='all', fig.height=4.5, fig.width=6}
+codaEuk8<-codaEuk9[-2,]
+# Imputation of zeros
+euk8_cmultRepl<-cmultRepl(codaEuk8, method="CZM", output="p-counts")
+
+# Centered log-ratio transformation
+clr_euk8<-apply(euk8_cmultRepl, 2, function(x){log(x)-mean(log(x))})
+
+# Calculate Aitchison distance matrix
+clr_euk8.dist<-dist(clr_euk8)
+clr_euk8.NMDS<-metaMDS(clr_euk8.dist, k=2)
+
+clr_euk8.NMDS.df<-data.frame(x=clr_euk8.NMDS$points[,1], y=clr_euk8.NMDS$points[,2], T_category=as.factor(metadata8[,5]), Vent_field=as.factor(metadata8[,3]), Temperature=metadata8[,4], Substratum=as.factor(metadata8[,6]))
+
+eu8<-ggplot(data=clr_euk8.NMDS.df, aes(x=x, y=y, color=Temperature, shape=Substratum)) + geom_point(size=4) + geom_text_repel(aes(label=rownames(metadata8)), hjust=0.5, vjust=1.5, size=6)+ ggtitle("Eukarya8") + scale_color_gradient(low="blue", high = "red")
+```
+
+```{r echo=FALSE, message=FALSE, fig.height=7, fig.width=8}
+combined<-ggarrange(ma8,me8,ba8,eu8,common.legend=TRUE, legend="right")
+combined
+```
+
+## Nine sample, QPCR-balanced microbial NMDS
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, results='hide', fig.keep='all', fig.height=4.5, fig.width=6}
+
+balMic9<-balMic[c(11,13,14,15,17,18,20,22,23),]
+# remove any OTU with only 1 read. Drops from 61,464 to 26,163 OTUs.
+balMic9<-balMic9[,which(colSums(balMic9) >0)]
+balMic9_cmultRepl<-cmultRepl(balMic9, method="CZM", output = "p-counts")
+
+# Centered log-ratio transformation
+clr_balMic9<-apply(balMic9_cmultRepl, 2, function(x){log(x)-mean(log(x))})
+
+# 'compositions' to calculate Aitchison distance matrix
+clr_balMic9.dist<-dist(clr_balMic9)
+
+# Take the Aitchison distance matrix into my standard pipeline
+clr_balMic9.NMDS<-metaMDS(clr_balMic9.dist, k=2)
+clr_balMic9.NMDS.df<-data.frame(x=clr_balMic9.NMDS$points[,1], y=clr_balMic9.NMDS$points[,2], T_category=as.factor(metadata9[,5]), Vent_field=as.factor(metadata9[,3]), Temperature=metadata9[,4], Substratum=as.factor(metadata9[,6]))
+
+ggplot(data=clr_balMic9.NMDS.df, aes(x=x, y=y, color=Temperature, shape=Substratum)) + geom_point(size=4) + geom_text_repel(aes(label=rownames(metadata9)), hjust=0.5, vjust=1.5, size=4)+ ggtitle("QPCR-balanced microbes (9)") + scale_color_gradient(low="blue", high = "red")
+```
+```{r echo=FALSE}
+ggsave("balanced microbes NMDS.pdf", height = 4, width = 5)
+```
+
+Envfit. 
+```{r echo=FALSE}
+clr_balMic9_NMDSfit<- envfit(clr_balMic9.NMDS ~ ., metadata9)
+clr_balMic9_NMDSfit
+```
+
+<br>
+
+## Macrofauna vs. Meiofauna
+```{r fig.height=4, fig.width=7}
+library(vegan)
+
+clr_mac9meio9NMDS<-procrustes(clr_mac9.NMDS, clr_meio9.NMDS, scale=FALSE, choices=c(1,2), symmetric=TRUE)
+
+par(mfrow=c(1,2))
+plot(clr_mac9meio9NMDS, kind=1)
+plot(clr_mac9meio9NMDS, kind=2)
+```
+
+Testing for significance.
+```{r}
+protest(clr_mac9.NMDS, clr_meio9.NMDS, scores="sites", permutations = how(nperm = 999))
+```
+
+## Macrofauna vs. Bacteria
+```{r echo=FALSE, fig.height=4, fig.width=7}
+clr_mac9bact9NMDS<-procrustes(clr_mac9.NMDS, clr_bact9.NMDS, scale=FALSE, choices=c(1,2), symmetric=TRUE)
+
+par(mfrow=c(1,2))
+plot(clr_mac9bact9NMDS, kind=1)
+plot(clr_mac9bact9NMDS, kind=2)
+
+protest(clr_mac9.NMDS, clr_bact9.NMDS, scores="sites", permutations = how(nperm = 999))
+```
+
+## Macrofauna vs. Archaea
+```{r echo=FALSE, fig.height=4, fig.width=7}
+clr_mac8arch8NMDS<-procrustes(clr_mac8.NMDS, clr_arch8.NMDS, scale=FALSE, choices=c(1,2), symmetric=TRUE)
+
+par(mfrow=c(1,2))
+plot(clr_mac8arch8NMDS, kind=1)
+plot(clr_mac8arch8NMDS, kind=2)
+
+protest(clr_mac8.NMDS, clr_arch8.NMDS, scores="sites", permutations = how(nperm = 999))
+```
+
+## Macrofauna vs. Eukarya
+```{r echo=FALSE, fig.height=4, fig.width=7}
+clr_mac9euk9NMDS<-procrustes(clr_mac9.NMDS, clr_euk9.NMDS, scale=FALSE, choices=c(1,2), symmetric=TRUE)
+
+par(mfrow=c(1,2))
+plot(clr_mac9euk9NMDS, kind=1)
+plot(clr_mac9euk9NMDS, kind=2)
+
+protest(clr_mac9.NMDS, clr_euk9.NMDS, scores="sites", permutations = how(nperm = 999))
+```
+
+## Meiofauna vs. Bacteria
+```{r echo=FALSE, fig.height=4, fig.width=7}
+clr_meio9bact9NMDS<-procrustes(clr_bact9.NMDS, clr_meio9.NMDS, scale=FALSE, choices=c(1,2), symmetric=TRUE)
+
+par(mfrow=c(1,2))
+plot(clr_meio9bact9NMDS, kind=1)
+plot(clr_meio9bact9NMDS, kind=2)
+
+protest(clr_meio9.NMDS, clr_bact9.NMDS, scores="sites", permutations = how(nperm = 999))
+```
+
+## Meiofauna vs. Archaea
+```{r echo=FALSE, fig.height=4, fig.width=7}
+clr_meio8arch8NMDS<-procrustes(clr_arch8.NMDS, clr_meio8.NMDS, scale=FALSE, choices=c(1,2), symmetric=TRUE)
+
+par(mfrow=c(1,2))
+plot(clr_meio8arch8NMDS, kind=1)
+plot(clr_meio8arch8NMDS, kind=2)
+
+protest(clr_meio8.NMDS, clr_arch8.NMDS, scores="sites", permutations = how(nperm = 999))
+```
+
+## Meiofauma vs. Eukarya
+```{r echo=FALSE, fig.height=4, fig.width=7}
+clr_meio9euk9NMDS<-procrustes(clr_euk9.NMDS, clr_meio9.NMDS, scale=FALSE, choices=c(1,2), symmetric=TRUE)
+
+par(mfrow=c(1,2))
+plot(clr_meio9euk9NMDS, kind=1)
+plot(clr_meio9euk9NMDS, kind=2)
+
+protest(clr_meio9.NMDS, clr_euk9.NMDS, scores="sites", permutations = how(nperm = 999))
+```
+## Bacteria vs. Eukarya
+```{r echo=FALSE, fig.height=4, fig.width=7}
+clr_bact9euk9NMDS<-procrustes(clr_euk9.NMDS, clr_bact9.NMDS, scale=FALSE, choices=c(1,2), symmetric=TRUE)
+
+par(mfrow=c(1,2))
+plot(clr_bact9euk9NMDS, kind=1)
+plot(clr_bact9euk9NMDS, kind=2)
+
+protest(clr_bact9.NMDS, clr_euk9.NMDS, scores="sites", permutations = how(nperm = 999))
+```
+## Archaea vs. Eukarya
+```{r echo=FALSE, fig.height=4, fig.width=7}
+clr_arch8euk8NMDS<-procrustes(clr_euk8.NMDS, clr_arch8.NMDS, scale=FALSE, choices=c(1,2), symmetric=TRUE)
+
+par(mfrow=c(1,2))
+plot(clr_arch8euk8NMDS, kind=1)
+plot(clr_arch8euk8NMDS, kind=2)
+
+protest(clr_arch8.NMDS, clr_euk8.NMDS, scores="sites", permutations = how(nperm = 999))
+```
+
+## Bacteria vs. Archaea
+```{r echo=FALSE, fig.height=4, fig.width=7}
+clr_bact8arch8NMDS<-procrustes(clr_arch8.NMDS, clr_bact8.NMDS, scale=FALSE, choices=c(1,2), symmetric=TRUE)
+
+par(mfrow=c(1,2))
+plot(clr_bact8arch8NMDS, kind=1)
+plot(clr_bact8arch8NMDS, kind=2)
+
+protest(clr_bact8.NMDS, clr_arch8.NMDS, scores="sites", permutations = how(nperm = 999))
+```
+
+## Microbes vs. Macrofauna
+```{r echo=FALSE, fig.height=4, fig.width=7}
+clr_macro9micro9NMDS<-procrustes(clr_balMic9.NMDS, clr_mac9.NMDS, scale=FALSE, choices=c(1,2), symmetric=TRUE)
+
+par(mfrow=c(1,2))
+plot(clr_macro9micro9NMDS, kind=1)
+plot(clr_macro9micro9NMDS, kind=2)
+
+protest(clr_mac9.NMDS, clr_balMic9.NMDS, scores="sites", permutations = how(nperm = 999))
+```
+
+## Microbes vs. Meiofauna
+```{r echo=FALSE, fig.height=4, fig.width=7}
+clr_meio9micro9NMDS<-procrustes(clr_balMic9.NMDS, clr_meio9.NMDS, scale=FALSE, choices=c(1,2), symmetric=TRUE)
+
+par(mfrow=c(1,2))
+plot(clr_meio9micro9NMDS, kind=1)
+plot(clr_meio9micro9NMDS, kind=2)
+
+protest(clr_meio9.NMDS, clr_balMic9.NMDS, scores="sites", permutations = how(nperm = 999))
+```
+
+<br>
+
+# Proportionality
+
+Microbial OTUs were binned by shared taxonomic assignment into 719 unique taxonomic identities. Prior to proportionality, rare taxa (i.e. those with counts of <2 in 7+ samples) were removed to minimize false discovery rate, resulting in final numbers of taxa for analysis of 335 unique microbial taxa, 14 macrofauna, and 17 meiofauna. Only rho values >0.75 are used in Cytoscape network mapping.
+
+```{r warning=FALSE, message=FALSE}
+library(propr)
+NoRares<-read.csv("Non_rares_for_propr.csv", header = T, row.names = 1)
+
+# Imputation of zeros
+NoRares_cmultRepl<-cmultRepl(NoRares, method="CZM", output = "p-counts")
+
+# Centered log-ratio transformation
+clr_NoRares<-apply(NoRares_cmultRepl, 2, function(x){log(x)-mean(log(x))})
+
+# Proportionality analysis
+NoRares.propr<-propr(counts=NoRares_cmultRepl, metric = "rho", p=1000)
+NoRaresCorrALL<-getResults(NoRares.propr)
+```
+
+
+# Session Info
+```{r}
+sessionInfo()
+```
+
