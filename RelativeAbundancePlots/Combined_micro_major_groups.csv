@@ -1,0 +1,576 @@
+Taxa,source,type,relabund
+Bacteria-Gammaproteobacteria,EMw3,tubeworm-associated,0.2669
+Bacteria-Alphaproteobacteria,EMw3,tubeworm-associated,0.3032
+Bacteria-Bacteroidetes,EMw3,tubeworm-associated,0.1373
+Bacteria-Epsilonbacteraeota,EMw3,tubeworm-associated,0.0052
+Bacteria-Deltaproteobacteria,EMw3,tubeworm-associated,0.0117
+Archaea-Thaumarchaeota,EMw3,tubeworm-associated,0.0947
+Archaea-Euryarchaeota,EMw3,tubeworm-associated,0.0001
+Bacteria-Patescibacteria,EMw3,tubeworm-associated,0.0179
+Bacteria-Chloroflexi,EMw3,tubeworm-associated,0.0041
+Eukaryota-Alveolata,EMw3,tubeworm-associated,0.0599
+Eukaryota-Rhizaria,EMw3,tubeworm-associated,0.0097
+Bacteria,EMw3,tubeworm-associated,0.0167
+Bacteria-Actinobacteria,EMw3,tubeworm-associated,0.0058
+Bacteria-Proteobacteria,EMw3,tubeworm-associated,0.0203
+Bacteria-Betaproteobacteriales,EMw3,tubeworm-associated,0.0029
+Eukaryota-Opisthokonta,EMw3,tubeworm-associated,0.0057
+Eukaryota,EMw3,tubeworm-associated,0.0035
+Archaea-Asgardaeota,EMw3,tubeworm-associated,0
+Bacteria-Acidobacteria,EMw3,tubeworm-associated,0.0031
+Eukaryota-Amoebozoa,EMw3,tubeworm-associated,0.001
+Bacteria-Aquificae,EMw3,tubeworm-associated,0
+Archaea-Crenarchaeota,EMw3,tubeworm-associated,0
+Bacteria-Other,EMw3,tubeworm-associated,0.0264
+Archaea-Other,EMw3,tubeworm-associated,0
+Eukaryota-Other,EMw3,tubeworm-associated,0.004
+Bacteria-Gammaproteobacteria,EMw6,tubeworm-associated,0.1368
+Bacteria-Alphaproteobacteria,EMw6,tubeworm-associated,0.3448
+Bacteria-Bacteroidetes,EMw6,tubeworm-associated,0.2042
+Bacteria-Epsilonbacteraeota,EMw6,tubeworm-associated,0.0093
+Bacteria-Deltaproteobacteria,EMw6,tubeworm-associated,0.0381
+Archaea-Thaumarchaeota,EMw6,tubeworm-associated,0.0479
+Archaea-Euryarchaeota,EMw6,tubeworm-associated,0
+Bacteria-Patescibacteria,EMw6,tubeworm-associated,0.0089
+Bacteria-Chloroflexi,EMw6,tubeworm-associated,0.0019
+Eukaryota-Alveolata,EMw6,tubeworm-associated,0.0825
+Eukaryota-Rhizaria,EMw6,tubeworm-associated,0.0022
+Bacteria,EMw6,tubeworm-associated,0.0229
+Bacteria-Actinobacteria,EMw6,tubeworm-associated,0.0015
+Bacteria-Proteobacteria,EMw6,tubeworm-associated,0.0118
+Bacteria-Betaproteobacteriales,EMw6,tubeworm-associated,0.0143
+Eukaryota-Opisthokonta,EMw6,tubeworm-associated,0.0009
+Eukaryota,EMw6,tubeworm-associated,0.0277
+Archaea-Asgardaeota,EMw6,tubeworm-associated,0
+Bacteria-Acidobacteria,EMw6,tubeworm-associated,0.0102
+Eukaryota-Amoebozoa,EMw6,tubeworm-associated,0.0011
+Bacteria-Aquificae,EMw6,tubeworm-associated,0
+Archaea-Crenarchaeota,EMw6,tubeworm-associated,0
+Bacteria-Other,EMw6,tubeworm-associated,0.0282
+Archaea-Other,EMw6,tubeworm-associated,0
+Eukaryota-Other,EMw6,tubeworm-associated,0.0046
+Bacteria-Gammaproteobacteria,ECw11,tubeworm-associated,0.1803
+Bacteria-Alphaproteobacteria,ECw11,tubeworm-associated,0.1182
+Bacteria-Bacteroidetes,ECw11,tubeworm-associated,0.3373
+Bacteria-Epsilonbacteraeota,ECw11,tubeworm-associated,0.0735
+Bacteria-Deltaproteobacteria,ECw11,tubeworm-associated,0.0277
+Archaea-Thaumarchaeota,ECw11,tubeworm-associated,0.0106
+Archaea-Euryarchaeota,ECw11,tubeworm-associated,0.0041
+Bacteria-Patescibacteria,ECw11,tubeworm-associated,0.022
+Bacteria-Chloroflexi,ECw11,tubeworm-associated,0.1331
+Eukaryota-Alveolata,ECw11,tubeworm-associated,0.0322
+Eukaryota-Rhizaria,ECw11,tubeworm-associated,0.0011
+Bacteria,ECw11,tubeworm-associated,0.0321
+Bacteria-Actinobacteria,ECw11,tubeworm-associated,0.0025
+Bacteria-Proteobacteria,ECw11,tubeworm-associated,0.0062
+Bacteria-Betaproteobacteriales,ECw11,tubeworm-associated,0.0005
+Eukaryota-Opisthokonta,ECw11,tubeworm-associated,0.0024
+Eukaryota,ECw11,tubeworm-associated,0.0093
+Archaea-Asgardaeota,ECw11,tubeworm-associated,0.0009
+Bacteria-Acidobacteria,ECw11,tubeworm-associated,0.0027
+Eukaryota-Amoebozoa,ECw11,tubeworm-associated,0.0003
+Bacteria-Aquificae,ECw11,tubeworm-associated,0
+Archaea-Crenarchaeota,ECw11,tubeworm-associated,0
+Bacteria-Other,ECw11,tubeworm-associated,0.0028
+Archaea-Other,ECw11,tubeworm-associated,0
+Eukaryota-Other,ECw11,tubeworm-associated,0.0002
+Bacteria-Gammaproteobacteria,EMw1,tubeworm-associated,0.0453
+Bacteria-Alphaproteobacteria,EMw1,tubeworm-associated,0.0879
+Bacteria-Bacteroidetes,EMw1,tubeworm-associated,0.2551
+Bacteria-Epsilonbacteraeota,EMw1,tubeworm-associated,0.172
+Bacteria-Deltaproteobacteria,EMw1,tubeworm-associated,0.0289
+Archaea-Thaumarchaeota,EMw1,tubeworm-associated,0.2242
+Archaea-Euryarchaeota,EMw1,tubeworm-associated,0.0336
+Bacteria-Patescibacteria,EMw1,tubeworm-associated,0.0171
+Bacteria-Chloroflexi,EMw1,tubeworm-associated,0.0186
+Eukaryota-Alveolata,EMw1,tubeworm-associated,0.0146
+Eukaryota-Rhizaria,EMw1,tubeworm-associated,0.0004
+Bacteria,EMw1,tubeworm-associated,0.0192
+Bacteria-Actinobacteria,EMw1,tubeworm-associated,0.0003
+Bacteria-Proteobacteria,EMw1,tubeworm-associated,0.0036
+Bacteria-Betaproteobacteriales,EMw1,tubeworm-associated,0.0029
+Eukaryota-Opisthokonta,EMw1,tubeworm-associated,0.0005
+Eukaryota,EMw1,tubeworm-associated,0.0126
+Archaea-Asgardaeota,EMw1,tubeworm-associated,0.0005
+Bacteria-Acidobacteria,EMw1,tubeworm-associated,0.0012
+Eukaryota-Amoebozoa,EMw1,tubeworm-associated,0.036
+Bacteria-Aquificae,EMw1,tubeworm-associated,0.0001
+Archaea-Crenarchaeota,EMw1,tubeworm-associated,0.0002
+Bacteria-Other,EMw1,tubeworm-associated,0.0107
+Archaea-Other,EMw1,tubeworm-associated,0.0145
+Eukaryota-Other,EMw1,tubeworm-associated,0.001
+Bacteria-Gammaproteobacteria,EMw4,tubeworm-associated,0.0011
+Bacteria-Alphaproteobacteria,EMw4,tubeworm-associated,0.0015
+Bacteria-Bacteroidetes,EMw4,tubeworm-associated,0.1396
+Bacteria-Epsilonbacteraeota,EMw4,tubeworm-associated,0.7426
+Bacteria-Deltaproteobacteria,EMw4,tubeworm-associated,0.0221
+Archaea-Thaumarchaeota,EMw4,tubeworm-associated,0.0001
+Archaea-Euryarchaeota,EMw4,tubeworm-associated,0.0015
+Bacteria-Patescibacteria,EMw4,tubeworm-associated,0.0284
+Bacteria-Chloroflexi,EMw4,tubeworm-associated,0.0103
+Eukaryota-Alveolata,EMw4,tubeworm-associated,0.0015
+Eukaryota-Rhizaria,EMw4,tubeworm-associated,0.0027
+Bacteria,EMw4,tubeworm-associated,0.0314
+Bacteria-Actinobacteria,EMw4,tubeworm-associated,0
+Bacteria-Proteobacteria,EMw4,tubeworm-associated,0.0029
+Bacteria-Betaproteobacteriales,EMw4,tubeworm-associated,0
+Eukaryota-Opisthokonta,EMw4,tubeworm-associated,0.0019
+Eukaryota,EMw4,tubeworm-associated,0.0074
+Archaea-Asgardaeota,EMw4,tubeworm-associated,0
+Bacteria-Acidobacteria,EMw4,tubeworm-associated,0.0002
+Eukaryota-Amoebozoa,EMw4,tubeworm-associated,0.0001
+Bacteria-Aquificae,EMw4,tubeworm-associated,0.001
+Archaea-Crenarchaeota,EMw4,tubeworm-associated,0
+Bacteria-Other,EMw4,tubeworm-associated,0.0008
+Archaea-Other,EMw4,tubeworm-associated,0.0009
+Eukaryota-Other,EMw4,tubeworm-associated,0.0021
+Bacteria-Gammaproteobacteria,EMw7,tubeworm-associated,0.0028
+Bacteria-Alphaproteobacteria,EMw7,tubeworm-associated,0.0008
+Bacteria-Bacteroidetes,EMw7,tubeworm-associated,0.3262
+Bacteria-Epsilonbacteraeota,EMw7,tubeworm-associated,0.5224
+Bacteria-Deltaproteobacteria,EMw7,tubeworm-associated,0.0215
+Archaea-Thaumarchaeota,EMw7,tubeworm-associated,0
+Archaea-Euryarchaeota,EMw7,tubeworm-associated,0.0006
+Bacteria-Patescibacteria,EMw7,tubeworm-associated,0.0244
+Bacteria-Chloroflexi,EMw7,tubeworm-associated,0.0268
+Eukaryota-Alveolata,EMw7,tubeworm-associated,0.0009
+Eukaryota-Rhizaria,EMw7,tubeworm-associated,0.0002
+Bacteria,EMw7,tubeworm-associated,0.0527
+Bacteria-Actinobacteria,EMw7,tubeworm-associated,0
+Bacteria-Proteobacteria,EMw7,tubeworm-associated,0.0083
+Bacteria-Betaproteobacteriales,EMw7,tubeworm-associated,0.0001
+Eukaryota-Opisthokonta,EMw7,tubeworm-associated,0.0034
+Eukaryota,EMw7,tubeworm-associated,0.0037
+Archaea-Asgardaeota,EMw7,tubeworm-associated,0
+Bacteria-Acidobacteria,EMw7,tubeworm-associated,0.0001
+Eukaryota-Amoebozoa,EMw7,tubeworm-associated,0.0001
+Bacteria-Aquificae,EMw7,tubeworm-associated,0.0001
+Archaea-Crenarchaeota,EMw7,tubeworm-associated,0
+Bacteria-Other,EMw7,tubeworm-associated,0.0041
+Archaea-Other,EMw7,tubeworm-associated,0.0003
+Eukaryota-Other,EMw7,tubeworm-associated,0.0004
+Bacteria-Gammaproteobacteria,EMw8,tubeworm-associated,0.0048
+Bacteria-Alphaproteobacteria,EMw8,tubeworm-associated,0.0015
+Bacteria-Bacteroidetes,EMw8,tubeworm-associated,0.2329
+Bacteria-Epsilonbacteraeota,EMw8,tubeworm-associated,0.5709
+Bacteria-Deltaproteobacteria,EMw8,tubeworm-associated,0.0249
+Archaea-Thaumarchaeota,EMw8,tubeworm-associated,0.0005
+Archaea-Euryarchaeota,EMw8,tubeworm-associated,0.0282
+Bacteria-Patescibacteria,EMw8,tubeworm-associated,0.0561
+Bacteria-Chloroflexi,EMw8,tubeworm-associated,0.0194
+Eukaryota-Alveolata,EMw8,tubeworm-associated,0.0005
+Eukaryota-Rhizaria,EMw8,tubeworm-associated,0.0008
+Bacteria,EMw8,tubeworm-associated,0.0413
+Bacteria-Actinobacteria,EMw8,tubeworm-associated,0
+Bacteria-Proteobacteria,EMw8,tubeworm-associated,0.0013
+Bacteria-Betaproteobacteriales,EMw8,tubeworm-associated,0.0001
+Eukaryota-Opisthokonta,EMw8,tubeworm-associated,0.0031
+Eukaryota,EMw8,tubeworm-associated,0.0012
+Archaea-Asgardaeota,EMw8,tubeworm-associated,0.0013
+Bacteria-Acidobacteria,EMw8,tubeworm-associated,0.0004
+Eukaryota-Amoebozoa,EMw8,tubeworm-associated,0.0004
+Bacteria-Aquificae,EMw8,tubeworm-associated,0.0002
+Archaea-Crenarchaeota,EMw8,tubeworm-associated,0.0001
+Bacteria-Other,EMw8,tubeworm-associated,0.0053
+Archaea-Other,EMw8,tubeworm-associated,0.0036
+Eukaryota-Other,EMw8,tubeworm-associated,0.0011
+Bacteria-Gammaproteobacteria,MVw12,tubeworm-associated,0.112
+Bacteria-Alphaproteobacteria,MVw12,tubeworm-associated,0.5708
+Bacteria-Bacteroidetes,MVw12,tubeworm-associated,0.1458
+Bacteria-Epsilonbacteraeota,MVw12,tubeworm-associated,0.0413
+Bacteria-Deltaproteobacteria,MVw12,tubeworm-associated,0.0055
+Archaea-Thaumarchaeota,MVw12,tubeworm-associated,0.0024
+Archaea-Euryarchaeota,MVw12,tubeworm-associated,0.0042
+Bacteria-Patescibacteria,MVw12,tubeworm-associated,0.0761
+Bacteria-Chloroflexi,MVw12,tubeworm-associated,0.0012
+Eukaryota-Alveolata,MVw12,tubeworm-associated,0.0004
+Eukaryota-Rhizaria,MVw12,tubeworm-associated,0.0021
+Bacteria,MVw12,tubeworm-associated,0.0135
+Bacteria-Actinobacteria,MVw12,tubeworm-associated,0
+Bacteria-Proteobacteria,MVw12,tubeworm-associated,0.0111
+Bacteria-Betaproteobacteriales,MVw12,tubeworm-associated,0
+Eukaryota-Opisthokonta,MVw12,tubeworm-associated,0.0055
+Eukaryota,MVw12,tubeworm-associated,0.0007
+Archaea-Asgardaeota,MVw12,tubeworm-associated,0.0005
+Bacteria-Acidobacteria,MVw12,tubeworm-associated,0.0008
+Eukaryota-Amoebozoa,MVw12,tubeworm-associated,0.0015
+Bacteria-Aquificae,MVw12,tubeworm-associated,0.0002
+Archaea-Crenarchaeota,MVw12,tubeworm-associated,0.0001
+Bacteria-Other,MVw12,tubeworm-associated,0.0027
+Archaea-Other,MVw12,tubeworm-associated,0.001
+Eukaryota-Other,MVw12,tubeworm-associated,0.0006
+Bacteria-Gammaproteobacteria,EMw2,tubeworm-associated,0.1464
+Bacteria-Alphaproteobacteria,EMw2,tubeworm-associated,0.468
+Bacteria-Bacteroidetes,EMw2,tubeworm-associated,0.084
+Bacteria-Epsilonbacteraeota,EMw2,tubeworm-associated,0.019
+Bacteria-Deltaproteobacteria,EMw2,tubeworm-associated,0.013
+Archaea-Thaumarchaeota,EMw2,tubeworm-associated,0.0814
+Archaea-Euryarchaeota,EMw2,tubeworm-associated,0.0003
+Bacteria-Patescibacteria,EMw2,tubeworm-associated,0.0566
+Bacteria-Chloroflexi,EMw2,tubeworm-associated,0.0115
+Eukaryota-Alveolata,EMw2,tubeworm-associated,0.0172
+Eukaryota-Rhizaria,EMw2,tubeworm-associated,0.002
+Bacteria,EMw2,tubeworm-associated,0.0227
+Bacteria-Actinobacteria,EMw2,tubeworm-associated,0.0006
+Bacteria-Proteobacteria,EMw2,tubeworm-associated,0.0197
+Bacteria-Betaproteobacteriales,EMw2,tubeworm-associated,0.0003
+Eukaryota-Opisthokonta,EMw2,tubeworm-associated,0.0181
+Eukaryota,EMw2,tubeworm-associated,0.0013
+Archaea-Asgardaeota,EMw2,tubeworm-associated,0
+Bacteria-Acidobacteria,EMw2,tubeworm-associated,0.019
+Eukaryota-Amoebozoa,EMw2,tubeworm-associated,0.0017
+Bacteria-Aquificae,EMw2,tubeworm-associated,0
+Archaea-Crenarchaeota,EMw2,tubeworm-associated,0
+Bacteria-Other,EMw2,tubeworm-associated,0.0111
+Archaea-Other,EMw2,tubeworm-associated,0
+Eukaryota-Other,EMw2,tubeworm-associated,0.0062
+Bacteria-Gammaproteobacteria,EMw5,tubeworm-associated,0.1893
+Bacteria-Alphaproteobacteria,EMw5,tubeworm-associated,0.3569
+Bacteria-Bacteroidetes,EMw5,tubeworm-associated,0.1241
+Bacteria-Epsilonbacteraeota,EMw5,tubeworm-associated,0.0226
+Bacteria-Deltaproteobacteria,EMw5,tubeworm-associated,0.0162
+Archaea-Thaumarchaeota,EMw5,tubeworm-associated,0.1483
+Archaea-Euryarchaeota,EMw5,tubeworm-associated,0.0001
+Bacteria-Patescibacteria,EMw5,tubeworm-associated,0.0767
+Bacteria-Chloroflexi,EMw5,tubeworm-associated,0.0025
+Eukaryota-Alveolata,EMw5,tubeworm-associated,0.0088
+Eukaryota-Rhizaria,EMw5,tubeworm-associated,0.0042
+Bacteria,EMw5,tubeworm-associated,0.0128
+Bacteria-Actinobacteria,EMw5,tubeworm-associated,0.0066
+Bacteria-Proteobacteria,EMw5,tubeworm-associated,0.0106
+Bacteria-Betaproteobacteriales,EMw5,tubeworm-associated,0.0001
+Eukaryota-Opisthokonta,EMw5,tubeworm-associated,0.0004
+Eukaryota,EMw5,tubeworm-associated,0.0022
+Archaea-Asgardaeota,EMw5,tubeworm-associated,0
+Bacteria-Acidobacteria,EMw5,tubeworm-associated,0.003
+Eukaryota-Amoebozoa,EMw5,tubeworm-associated,0.0009
+Bacteria-Aquificae,EMw5,tubeworm-associated,0.0001
+Archaea-Crenarchaeota,EMw5,tubeworm-associated,0
+Bacteria-Other,EMw5,tubeworm-associated,0.0121
+Archaea-Other,EMw5,tubeworm-associated,0
+Eukaryota-Other,EMw5,tubeworm-associated,0.0016
+Bacteria-Gammaproteobacteria,ECw9,tubeworm-associated,0.0249
+Bacteria-Alphaproteobacteria,ECw9,tubeworm-associated,0.0702
+Bacteria-Bacteroidetes,ECw9,tubeworm-associated,0.1334
+Bacteria-Epsilonbacteraeota,ECw9,tubeworm-associated,0.0234
+Bacteria-Deltaproteobacteria,ECw9,tubeworm-associated,0.0486
+Archaea-Thaumarchaeota,ECw9,tubeworm-associated,0.0698
+Archaea-Euryarchaeota,ECw9,tubeworm-associated,0.4372
+Bacteria-Patescibacteria,ECw9,tubeworm-associated,0.0114
+Bacteria-Chloroflexi,ECw9,tubeworm-associated,0.0164
+Eukaryota-Alveolata,ECw9,tubeworm-associated,0.0118
+Eukaryota-Rhizaria,ECw9,tubeworm-associated,0.0017
+Bacteria,ECw9,tubeworm-associated,0.0107
+Bacteria-Actinobacteria,ECw9,tubeworm-associated,0.0002
+Bacteria-Proteobacteria,ECw9,tubeworm-associated,0.0033
+Bacteria-Betaproteobacteriales,ECw9,tubeworm-associated,0.0005
+Eukaryota-Opisthokonta,ECw9,tubeworm-associated,0.0018
+Eukaryota,ECw9,tubeworm-associated,0.0018
+Archaea-Asgardaeota,ECw9,tubeworm-associated,0.0684
+Bacteria-Acidobacteria,ECw9,tubeworm-associated,0.0014
+Eukaryota-Amoebozoa,ECw9,tubeworm-associated,0.0027
+Bacteria-Aquificae,ECw9,tubeworm-associated,0
+Archaea-Crenarchaeota,ECw9,tubeworm-associated,0.0097
+Bacteria-Other,ECw9,tubeworm-associated,0.0023
+Archaea-Other,ECw9,tubeworm-associated,0.0466
+Eukaryota-Other,ECw9,tubeworm-associated,0.0017
+Bacteria-Gammaproteobacteria,ECw10,tubeworm-associated,0.0044
+Bacteria-Alphaproteobacteria,ECw10,tubeworm-associated,0.0039
+Bacteria-Bacteroidetes,ECw10,tubeworm-associated,0.5158
+Bacteria-Epsilonbacteraeota,ECw10,tubeworm-associated,0.2139
+Bacteria-Deltaproteobacteria,ECw10,tubeworm-associated,0.0499
+Archaea-Thaumarchaeota,ECw10,tubeworm-associated,0.0005
+Archaea-Euryarchaeota,ECw10,tubeworm-associated,0.0073
+Bacteria-Patescibacteria,ECw10,tubeworm-associated,0.0143
+Bacteria-Chloroflexi,ECw10,tubeworm-associated,0.1195
+Eukaryota-Alveolata,ECw10,tubeworm-associated,0.0172
+Eukaryota-Rhizaria,ECw10,tubeworm-associated,0.0048
+Bacteria,ECw10,tubeworm-associated,0.026
+Bacteria-Actinobacteria,ECw10,tubeworm-associated,0.0001
+Bacteria-Proteobacteria,ECw10,tubeworm-associated,0.0012
+Bacteria-Betaproteobacteriales,ECw10,tubeworm-associated,0.0001
+Eukaryota-Opisthokonta,ECw10,tubeworm-associated,0.012
+Eukaryota,ECw10,tubeworm-associated,0.0007
+Archaea-Asgardaeota,ECw10,tubeworm-associated,0.0012
+Bacteria-Acidobacteria,ECw10,tubeworm-associated,0.0022
+Eukaryota-Amoebozoa,ECw10,tubeworm-associated,0.0001
+Bacteria-Aquificae,ECw10,tubeworm-associated,0.0007
+Archaea-Crenarchaeota,ECw10,tubeworm-associated,0.0004
+Bacteria-Other,ECw10,tubeworm-associated,0.0027
+Archaea-Other,ECw10,tubeworm-associated,0.0004
+Eukaryota-Other,ECw10,tubeworm-associated,0.0007
+Bacteria-Gammaproteobacteria,MVw13,tubeworm-associated,0.0644
+Bacteria-Alphaproteobacteria,MVw13,tubeworm-associated,0.1518
+Bacteria-Bacteroidetes,MVw13,tubeworm-associated,0.2017
+Bacteria-Epsilonbacteraeota,MVw13,tubeworm-associated,0.0769
+Bacteria-Deltaproteobacteria,MVw13,tubeworm-associated,0.0452
+Archaea-Thaumarchaeota,MVw13,tubeworm-associated,0.0001
+Archaea-Euryarchaeota,MVw13,tubeworm-associated,0.0652
+Bacteria-Patescibacteria,MVw13,tubeworm-associated,0.0148
+Bacteria-Chloroflexi,MVw13,tubeworm-associated,0.217
+Eukaryota-Alveolata,MVw13,tubeworm-associated,0.0143
+Eukaryota-Rhizaria,MVw13,tubeworm-associated,0.0073
+Bacteria,MVw13,tubeworm-associated,0.0328
+Bacteria-Actinobacteria,MVw13,tubeworm-associated,0.0003
+Bacteria-Proteobacteria,MVw13,tubeworm-associated,0.0059
+Bacteria-Betaproteobacteriales,MVw13,tubeworm-associated,0
+Eukaryota-Opisthokonta,MVw13,tubeworm-associated,0.0434
+Eukaryota,MVw13,tubeworm-associated,0.0086
+Archaea-Asgardaeota,MVw13,tubeworm-associated,0.0026
+Bacteria-Acidobacteria,MVw13,tubeworm-associated,0.0067
+Eukaryota-Amoebozoa,MVw13,tubeworm-associated,0.0057
+Bacteria-Aquificae,MVw13,tubeworm-associated,0
+Archaea-Crenarchaeota,MVw13,tubeworm-associated,0.001
+Bacteria-Other,MVw13,tubeworm-associated,0.0278
+Archaea-Other,MVw13,tubeworm-associated,0.0003
+Eukaryota-Other,MVw13,tubeworm-associated,0.006
+Bacteria-Gammaproteobacteria,EMf3,diffuse fluids,0.4217
+Bacteria-Alphaproteobacteria,EMf3,diffuse fluids,0.2867
+Bacteria-Bacteroidetes,EMf3,diffuse fluids,0.0067
+Bacteria-Epsilonbacteraeota,EMf3,diffuse fluids,0.0021
+Bacteria-Deltaproteobacteria,EMf3,diffuse fluids,0.0143
+Archaea-Thaumarchaeota,EMf3,diffuse fluids,0.0663
+Archaea-Euryarchaeota,EMf3,diffuse fluids,0.0641
+Bacteria-Patescibacteria,EMf3,diffuse fluids,0.0004
+Bacteria-Chloroflexi,EMf3,diffuse fluids,0
+Eukaryota-Alveolata,EMf3,diffuse fluids,0.0681
+Eukaryota-Rhizaria,EMf3,diffuse fluids,0.0409
+Bacteria,EMf3,diffuse fluids,0.0033
+Bacteria-Actinobacteria,EMf3,diffuse fluids,0.0025
+Bacteria-Proteobacteria,EMf3,diffuse fluids,0.0112
+Bacteria-Betaproteobacteriales,EMf3,diffuse fluids,0.0002
+Eukaryota-Opisthokonta,EMf3,diffuse fluids,0.0003
+Eukaryota,EMf3,diffuse fluids,0.0007
+Archaea-Asgardaeota,EMf3,diffuse fluids,0
+Bacteria-Acidobacteria,EMf3,diffuse fluids,0.0001
+Eukaryota-Amoebozoa,EMf3,diffuse fluids,0
+Bacteria-Aquificae,EMf3,diffuse fluids,0.0001
+Archaea-Crenarchaeota,EMf3,diffuse fluids,0
+Bacteria-Other,EMf3,diffuse fluids,0.0025
+Archaea-Other,EMf3,diffuse fluids,0.0001
+Eukaryota-Other,EMf3,diffuse fluids,0.0078
+Bacteria-Gammaproteobacteria,EMf11,diffuse fluids,0.3862
+Bacteria-Alphaproteobacteria,EMf11,diffuse fluids,0.1064
+Bacteria-Bacteroidetes,EMf11,diffuse fluids,0.0356
+Bacteria-Epsilonbacteraeota,EMf11,diffuse fluids,0.2293
+Bacteria-Deltaproteobacteria,EMf11,diffuse fluids,0.0312
+Archaea-Thaumarchaeota,EMf11,diffuse fluids,0.0617
+Archaea-Euryarchaeota,EMf11,diffuse fluids,0.0076
+Bacteria-Patescibacteria,EMf11,diffuse fluids,0.0433
+Bacteria-Chloroflexi,EMf11,diffuse fluids,0.0018
+Eukaryota-Alveolata,EMf11,diffuse fluids,0.0227
+Eukaryota-Rhizaria,EMf11,diffuse fluids,0.0364
+Bacteria,EMf11,diffuse fluids,0.0096
+Bacteria-Actinobacteria,EMf11,diffuse fluids,0.0097
+Bacteria-Proteobacteria,EMf11,diffuse fluids,0.0061
+Bacteria-Betaproteobacteriales,EMf11,diffuse fluids,0.0011
+Eukaryota-Opisthokonta,EMf11,diffuse fluids,0.0003
+Eukaryota,EMf11,diffuse fluids,0.0003
+Archaea-Asgardaeota,EMf11,diffuse fluids,0
+Bacteria-Acidobacteria,EMf11,diffuse fluids,0.0003
+Eukaryota-Amoebozoa,EMf11,diffuse fluids,0
+Bacteria-Aquificae,EMf11,diffuse fluids,0.0001
+Archaea-Crenarchaeota,EMf11,diffuse fluids,0.0004
+Bacteria-Other,EMf11,diffuse fluids,0.0053
+Archaea-Other,EMf11,diffuse fluids,0.0005
+Eukaryota-Other,EMf11,diffuse fluids,0.004
+Bacteria-Gammaproteobacteria,EMf1,diffuse fluids,0.5014
+Bacteria-Alphaproteobacteria,EMf1,diffuse fluids,0.1582
+Bacteria-Bacteroidetes,EMf1,diffuse fluids,0.0104
+Bacteria-Epsilonbacteraeota,EMf1,diffuse fluids,0.0964
+Bacteria-Deltaproteobacteria,EMf1,diffuse fluids,0.0211
+Archaea-Thaumarchaeota,EMf1,diffuse fluids,0.0403
+Archaea-Euryarchaeota,EMf1,diffuse fluids,0.0133
+Bacteria-Patescibacteria,EMf1,diffuse fluids,0.0817
+Bacteria-Chloroflexi,EMf1,diffuse fluids,0.0002
+Eukaryota-Alveolata,EMf1,diffuse fluids,0.0035
+Eukaryota-Rhizaria,EMf1,diffuse fluids,0.0116
+Bacteria,EMf1,diffuse fluids,0.0161
+Bacteria-Actinobacteria,EMf1,diffuse fluids,0.0213
+Bacteria-Proteobacteria,EMf1,diffuse fluids,0.0067
+Bacteria-Betaproteobacteriales,EMf1,diffuse fluids,0.0002
+Eukaryota-Opisthokonta,EMf1,diffuse fluids,0.0001
+Eukaryota,EMf1,diffuse fluids,0.0104
+Archaea-Asgardaeota,EMf1,diffuse fluids,0
+Bacteria-Acidobacteria,EMf1,diffuse fluids,0.0006
+Eukaryota-Amoebozoa,EMf1,diffuse fluids,0
+Bacteria-Aquificae,EMf1,diffuse fluids,0.0012
+Archaea-Crenarchaeota,EMf1,diffuse fluids,0
+Bacteria-Other,EMf1,diffuse fluids,0.0045
+Archaea-Other,EMf1,diffuse fluids,0.0001
+Eukaryota-Other,EMf1,diffuse fluids,0.0007
+Bacteria-Gammaproteobacteria,EMf7,diffuse fluids,0.4477
+Bacteria-Alphaproteobacteria,EMf7,diffuse fluids,0.2192
+Bacteria-Bacteroidetes,EMf7,diffuse fluids,0.0381
+Bacteria-Epsilonbacteraeota,EMf7,diffuse fluids,0.038
+Bacteria-Deltaproteobacteria,EMf7,diffuse fluids,0.0754
+Archaea-Thaumarchaeota,EMf7,diffuse fluids,0.012
+Archaea-Euryarchaeota,EMf7,diffuse fluids,0.0021
+Bacteria-Patescibacteria,EMf7,diffuse fluids,0.0193
+Bacteria-Chloroflexi,EMf7,diffuse fluids,0.0003
+Eukaryota-Alveolata,EMf7,diffuse fluids,0.0216
+Eukaryota-Rhizaria,EMf7,diffuse fluids,0.0191
+Bacteria,EMf7,diffuse fluids,0.0192
+Bacteria-Actinobacteria,EMf7,diffuse fluids,0.0316
+Bacteria-Proteobacteria,EMf7,diffuse fluids,0.0102
+Bacteria-Betaproteobacteriales,EMf7,diffuse fluids,0.0017
+Eukaryota-Opisthokonta,EMf7,diffuse fluids,0.0001
+Eukaryota,EMf7,diffuse fluids,0.0001
+Archaea-Asgardaeota,EMf7,diffuse fluids,0
+Bacteria-Acidobacteria,EMf7,diffuse fluids,0.0014
+Eukaryota-Amoebozoa,EMf7,diffuse fluids,0
+Bacteria-Aquificae,EMf7,diffuse fluids,0.0342
+Archaea-Crenarchaeota,EMf7,diffuse fluids,0
+Bacteria-Other,EMf7,diffuse fluids,0.0069
+Archaea-Other,EMf7,diffuse fluids,0
+Eukaryota-Other,EMf7,diffuse fluids,0.0018
+Bacteria-Gammaproteobacteria,MVf12,diffuse fluids,0.2939
+Bacteria-Alphaproteobacteria,MVf12,diffuse fluids,0.5417
+Bacteria-Bacteroidetes,MVf12,diffuse fluids,0.0671
+Bacteria-Epsilonbacteraeota,MVf12,diffuse fluids,0.0289
+Bacteria-Deltaproteobacteria,MVf12,diffuse fluids,0.0018
+Archaea-Thaumarchaeota,MVf12,diffuse fluids,0.0303
+Archaea-Euryarchaeota,MVf12,diffuse fluids,0.0024
+Bacteria-Patescibacteria,MVf12,diffuse fluids,0.0089
+Bacteria-Chloroflexi,MVf12,diffuse fluids,0.0004
+Eukaryota-Alveolata,MVf12,diffuse fluids,0.0056
+Eukaryota-Rhizaria,MVf12,diffuse fluids,0.0034
+Bacteria,MVf12,diffuse fluids,0.0044
+Bacteria-Actinobacteria,MVf12,diffuse fluids,0.0029
+Bacteria-Proteobacteria,MVf12,diffuse fluids,0.0062
+Bacteria-Betaproteobacteriales,MVf12,diffuse fluids,0.0001
+Eukaryota-Opisthokonta,MVf12,diffuse fluids,0.0002
+Eukaryota,MVf12,diffuse fluids,0
+Archaea-Asgardaeota,MVf12,diffuse fluids,0
+Bacteria-Acidobacteria,MVf12,diffuse fluids,0.0003
+Eukaryota-Amoebozoa,MVf12,diffuse fluids,0
+Bacteria-Aquificae,MVf12,diffuse fluids,0.0004
+Archaea-Crenarchaeota,MVf12,diffuse fluids,0
+Bacteria-Other,MVf12,diffuse fluids,0.0008
+Archaea-Other,MVf12,diffuse fluids,0
+Eukaryota-Other,MVf12,diffuse fluids,0.0002
+Bacteria-Gammaproteobacteria,EMf2,diffuse fluids,0.4268
+Bacteria-Alphaproteobacteria,EMf2,diffuse fluids,0.3861
+Bacteria-Bacteroidetes,EMf2,diffuse fluids,0.0137
+Bacteria-Epsilonbacteraeota,EMf2,diffuse fluids,0.0026
+Bacteria-Deltaproteobacteria,EMf2,diffuse fluids,0.0152
+Archaea-Thaumarchaeota,EMf2,diffuse fluids,0.014
+Archaea-Euryarchaeota,EMf2,diffuse fluids,0.0172
+Bacteria-Patescibacteria,EMf2,diffuse fluids,0.0004
+Bacteria-Chloroflexi,EMf2,diffuse fluids,0.0004
+Eukaryota-Alveolata,EMf2,diffuse fluids,0.0532
+Eukaryota-Rhizaria,EMf2,diffuse fluids,0.0349
+Bacteria,EMf2,diffuse fluids,0.0042
+Bacteria-Actinobacteria,EMf2,diffuse fluids,0.0016
+Bacteria-Proteobacteria,EMf2,diffuse fluids,0.0147
+Bacteria-Betaproteobacteriales,EMf2,diffuse fluids,0.0006
+Eukaryota-Opisthokonta,EMf2,diffuse fluids,0.0018
+Eukaryota,EMf2,diffuse fluids,0.0012
+Archaea-Asgardaeota,EMf2,diffuse fluids,0
+Bacteria-Acidobacteria,EMf2,diffuse fluids,0.0001
+Eukaryota-Amoebozoa,EMf2,diffuse fluids,0
+Bacteria-Aquificae,EMf2,diffuse fluids,0.0001
+Archaea-Crenarchaeota,EMf2,diffuse fluids,0
+Bacteria-Other,EMf2,diffuse fluids,0.0025
+Archaea-Other,EMf2,diffuse fluids,0
+Eukaryota-Other,EMf2,diffuse fluids,0.0087
+Bacteria-Gammaproteobacteria,ECf9,diffuse fluids,0.369
+Bacteria-Alphaproteobacteria,ECf9,diffuse fluids,0.1205
+Bacteria-Bacteroidetes,ECf9,diffuse fluids,0.0204
+Bacteria-Epsilonbacteraeota,ECf9,diffuse fluids,0.0505
+Bacteria-Deltaproteobacteria,ECf9,diffuse fluids,0.1453
+Archaea-Thaumarchaeota,ECf9,diffuse fluids,0.0754
+Archaea-Euryarchaeota,ECf9,diffuse fluids,0.0491
+Bacteria-Patescibacteria,ECf9,diffuse fluids,0.0084
+Bacteria-Chloroflexi,ECf9,diffuse fluids,0.0017
+Eukaryota-Alveolata,ECf9,diffuse fluids,0.0078
+Eukaryota-Rhizaria,ECf9,diffuse fluids,0.099
+Bacteria,ECf9,diffuse fluids,0.0054
+Bacteria-Actinobacteria,ECf9,diffuse fluids,0.0216
+Bacteria-Proteobacteria,ECf9,diffuse fluids,0.0103
+Bacteria-Betaproteobacteriales,ECf9,diffuse fluids,0.0014
+Eukaryota-Opisthokonta,ECf9,diffuse fluids,0.0001
+Eukaryota,ECf9,diffuse fluids,0.0001
+Archaea-Asgardaeota,ECf9,diffuse fluids,0
+Bacteria-Acidobacteria,ECf9,diffuse fluids,0.0007
+Eukaryota-Amoebozoa,ECf9,diffuse fluids,0
+Bacteria-Aquificae,ECf9,diffuse fluids,0.0005
+Archaea-Crenarchaeota,ECf9,diffuse fluids,0.0001
+Bacteria-Other,ECf9,diffuse fluids,0.012
+Archaea-Other,ECf9,diffuse fluids,0.0002
+Eukaryota-Other,ECf9,diffuse fluids,0.0006
+Bacteria-Gammaproteobacteria,bkEC,background,0.3931
+Bacteria-Alphaproteobacteria,bkEC,background,0.0913
+Bacteria-Bacteroidetes,bkEC,background,0.0036
+Bacteria-Epsilonbacteraeota,bkEC,background,0.0021
+Bacteria-Deltaproteobacteria,bkEC,background,0.2037
+Archaea-Thaumarchaeota,bkEC,background,0.0994
+Archaea-Euryarchaeota,bkEC,background,0.0374
+Bacteria-Patescibacteria,bkEC,background,0.0004
+Bacteria-Chloroflexi,bkEC,background,0
+Eukaryota-Alveolata,bkEC,background,0.0177
+Eukaryota-Rhizaria,bkEC,background,0.0855
+Bacteria,bkEC,background,0.0042
+Bacteria-Actinobacteria,bkEC,background,0.0322
+Bacteria-Proteobacteria,bkEC,background,0.0145
+Bacteria-Betaproteobacteriales,bkEC,background,0.0009
+Eukaryota-Opisthokonta,bkEC,background,0.0003
+Eukaryota,bkEC,background,0.0002
+Archaea-Asgardaeota,bkEC,background,0
+Bacteria-Acidobacteria,bkEC,background,0.0009
+Eukaryota-Amoebozoa,bkEC,background,0
+Bacteria-Aquificae,bkEC,background,0
+Archaea-Crenarchaeota,bkEC,background,0
+Bacteria-Other,bkEC,background,0.012
+Archaea-Other,bkEC,background,0
+Eukaryota-Other,bkEC,background,0.0005
+Bacteria-Gammaproteobacteria,bkEM,background,0.1309
+Bacteria-Alphaproteobacteria,bkEM,background,0.1318
+Bacteria-Bacteroidetes,bkEM,background,0.007
+Bacteria-Epsilonbacteraeota,bkEM,background,0.0014
+Bacteria-Deltaproteobacteria,bkEM,background,0.3483
+Archaea-Thaumarchaeota,bkEM,background,0.1191
+Archaea-Euryarchaeota,bkEM,background,0.0354
+Bacteria-Patescibacteria,bkEM,background,0.0006
+Bacteria-Chloroflexi,bkEM,background,0
+Eukaryota-Alveolata,bkEM,background,0.0111
+Eukaryota-Rhizaria,bkEM,background,0.0887
+Bacteria,bkEM,background,0.0077
+Bacteria-Actinobacteria,bkEM,background,0.0703
+Bacteria-Proteobacteria,bkEM,background,0.0154
+Bacteria-Betaproteobacteriales,bkEM,background,0.0022
+Eukaryota-Opisthokonta,bkEM,background,0.0001
+Eukaryota,bkEM,background,0.0003
+Archaea-Asgardaeota,bkEM,background,0
+Bacteria-Acidobacteria,bkEM,background,0.0027
+Eukaryota-Amoebozoa,bkEM,background,0.0002
+Bacteria-Aquificae,bkEM,background,0.0001
+Archaea-Crenarchaeota,bkEM,background,0
+Bacteria-Other,bkEM,background,0.0261
+Archaea-Other,bkEM,background,0
+Eukaryota-Other,bkEM,background,0.0005
+Bacteria-Gammaproteobacteria,bkMV,background,0.1795
+Bacteria-Alphaproteobacteria,bkMV,background,0.1265
+Bacteria-Bacteroidetes,bkMV,background,0.0383
+Bacteria-Epsilonbacteraeota,bkMV,background,0.0038
+Bacteria-Deltaproteobacteria,bkMV,background,0.2956
+Archaea-Thaumarchaeota,bkMV,background,0.0271
+Archaea-Euryarchaeota,bkMV,background,0.0188
+Bacteria-Patescibacteria,bkMV,background,0.0072
+Bacteria-Chloroflexi,bkMV,background,0
+Eukaryota-Alveolata,bkMV,background,0.0348
+Eukaryota-Rhizaria,bkMV,background,0.0241
+Bacteria,bkMV,background,0.0019
+Bacteria-Actinobacteria,bkMV,background,0.0739
+Bacteria-Proteobacteria,bkMV,background,0.0026
+Bacteria-Betaproteobacteriales,bkMV,background,0.1196
+Eukaryota-Opisthokonta,bkMV,background,0.0019
+Eukaryota,bkMV,background,0.0004
+Archaea-Asgardaeota,bkMV,background,0
+Bacteria-Acidobacteria,bkMV,background,0.0016
+Eukaryota-Amoebozoa,bkMV,background,0
+Bacteria-Aquificae,bkMV,background,0.001
+Archaea-Crenarchaeota,bkMV,background,0
+Bacteria-Other,bkMV,background,0.0409
+Archaea-Other,bkMV,background,0
+Eukaryota-Other,bkMV,background,0.0005
