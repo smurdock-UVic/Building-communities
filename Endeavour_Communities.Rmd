@@ -1,14 +1,18 @@
 ---
-title: "Recognizing communities among microbes, meiofauna and macrofauna at hydrothermal vents"
+title: Recognizing communities among microbes, meiofauna and macrofauna at hydrothermal
+  vents
 author: "Sheryl Murdock"
 date: "25 November 2020"
-output: 
+output:
   html_document:
-    toc: true
-    toc_float: true
-    toc_depth: 3
+    number_sections: yes
     theme: cerulean
-    number_sections: true
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
 ---
 
 ```{r setup, include=FALSE}
